@@ -19,14 +19,15 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
   @Get()
-  findAll(@Query() paginationQuery): Company[] {
+  findAll(@Query() queryParams): Promise<Company[]> {
+    // console.log({ paginationQuery: queryParams });
     // const { limit, offset } = paginationQuery;
     return this.companiesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Company {
-    const company = this.companiesService.findOne('' + id);
+  async findOne(@Param('id') id: number): Promise<Company> {
+    const company = await this.companiesService.findOne(id);
     // TODO: Use interceptors (filters)
     if (!company) throw new NotFoundException(`Company #${id} not found`);
 
@@ -39,12 +40,12 @@ export class CompaniesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
+  update(@Param('id') id: number, @Body() updateCompanyDto: UpdateCompanyDto) {
     return this.companiesService.update(id, updateCompanyDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.companiesService.remove(id);
   }
 }
