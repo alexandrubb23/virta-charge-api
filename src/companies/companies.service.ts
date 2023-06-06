@@ -14,14 +14,19 @@ export class CompaniesService {
 
   findAll(): Promise<Company[]> {
     return this.companyRepository.find({
-      order: {
-        id: 'DESC', // TODO: Order based on query params
+      relations: {
+        charging_stations: true,
       },
     });
   }
 
   async findOne(id: number): Promise<Company> {
-    const company = await this.companyRepository.findOne({ where: { id } });
+    const company = await this.companyRepository.findOne({
+      where: { id },
+      relations: {
+        charging_stations: true,
+      },
+    });
     if (!company) {
       throw new NotFoundException(`Company #${id} not found`);
     }

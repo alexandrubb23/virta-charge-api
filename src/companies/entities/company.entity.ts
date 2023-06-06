@@ -1,4 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { ChargingStations } from './charging-stations.entity';
 
 @Entity('companies')
 export class Company {
@@ -10,4 +19,11 @@ export class Company {
 
   @Column()
   parent_company_id: number;
+
+  @JoinTable()
+  @ManyToMany(
+    (type) => ChargingStations,
+    (charging_station) => charging_station.companies,
+  )
+  charging_stations: ChargingStations[];
 }
