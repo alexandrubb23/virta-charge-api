@@ -10,7 +10,6 @@ export class CompaniesService {
       id: 1,
       name: 'Company 1',
       parent_company_id: 0,
-      children: [],
       charging_stations: ['station 1', 'station2'],
     },
   ];
@@ -23,7 +22,7 @@ export class CompaniesService {
     return this.companies.find((company) => company.id === +id);
   }
 
-  create(companyDto: CreateCompanyDto): Company {
+  create(companyDto: CreateCompanyDto): any {
     this.companies.push(companyDto);
     return companyDto;
   }

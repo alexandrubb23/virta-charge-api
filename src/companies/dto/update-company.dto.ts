@@ -1,8 +1,5 @@
-import { Company } from 'src/companies/entities/company.entity';
+import { PartialType } from '@nestjs/mapped-types';
 
-export class UpdateCompanyDto {
-  readonly name?: string;
-  readonly parent_company_id?: number;
-  readonly children?: Company[];
-  readonly charging_stations?: string[];
-}
+import { CreateCompanyDto } from './create-company.dto';
+
+export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {}
