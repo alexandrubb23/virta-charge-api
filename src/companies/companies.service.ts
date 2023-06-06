@@ -10,7 +10,6 @@ export class CompaniesService {
       id: 1,
       name: 'Company 1',
       parent_company_id: 0,
-      charging_stations: ['station 1', 'station2'],
     },
   ];
 

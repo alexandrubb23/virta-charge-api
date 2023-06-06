@@ -6,7 +6,4 @@ export class CreateCompanyDto {
 
   @IsNumber()
   readonly parent_company_id: number;
-
-  @IsString({ each: true })
-  readonly charging_stations: string[];
 }

@@ -29,7 +29,6 @@ describe('CompaniesController', () => {
           name: 'Company 1',
           parent_company_id: 0,
           children: [],
-          charging_stations: [],
         },
       ];
 
@@ -50,12 +49,11 @@ describe('CompaniesController', () => {
         name: 'Company 1',
         parent_company_id: 0,
         children: [],
-        charging_stations: [],
       };
 
       jest.spyOn(companiesService, 'findOne').mockImplementation(() => company);
 
-      const response = await companiesController.findOne('1');
+      const response = await companiesController.findOne(1);
       expect(response).toBe(company);
     });
 
@@ -65,7 +63,6 @@ describe('CompaniesController', () => {
         name: 'Company 1',
         parent_company_id: 0,
         children: [],
-        charging_stations: [],
       };
 
       jest.spyOn(companiesService, 'create').mockImplementation(() => company);
@@ -85,7 +82,6 @@ describe('CompaniesController', () => {
         name: 'Company 1',
         parent_company_id: 0,
         children: [],
-        charging_stations: [],
       };
 
       jest.spyOn(companiesService, 'update').mockImplementation(() => company);
@@ -105,7 +101,6 @@ describe('CompaniesController', () => {
         name: 'Company 1',
         parent_company_id: 0,
         children: [],
-        charging_stations: [],
       };
 
       jest.spyOn(companiesService, 'remove').mockImplementation(() => company);
