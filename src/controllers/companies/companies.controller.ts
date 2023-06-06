@@ -29,4 +29,9 @@ export class CompaniesController {
   update(@Param('id') id: string, @Body() body) {
     return `This action updates a #${id} company`;
   }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return `This action removes a #${id} company`;
+  }
 }
