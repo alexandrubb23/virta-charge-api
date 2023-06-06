@@ -3,7 +3,6 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -22,8 +21,11 @@ export class Company {
 
   @JoinTable()
   @ManyToMany(
-    (type) => ChargingStations,
-    (charging_station) => charging_station.companies,
+    () => ChargingStations,
+    (chargingStation) => chargingStation.companies,
+    {
+      cascade: true,
+    },
   )
   charging_stations: ChargingStations[];
 }

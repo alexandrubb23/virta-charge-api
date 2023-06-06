@@ -1,4 +1,5 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsObject, IsString } from 'class-validator';
+import { ChargingStations } from '../entities/charging-stations.entity';
 
 export class CreateCompanyDto {
   @IsString()
@@ -6,4 +7,7 @@ export class CreateCompanyDto {
 
   @IsNumber()
   readonly parent_company_id: number;
+
+  @IsObject({ each: true })
+  readonly charging_stations: ChargingStations[];
 }
