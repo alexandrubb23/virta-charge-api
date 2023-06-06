@@ -3,16 +3,16 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   NotFoundException,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
+import { CreateCompanyDto } from './dto/create-company.dto';
 import { Company } from './entities/company.entity';
+import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Controller('companies')
 export class CompaniesController {
@@ -34,13 +34,13 @@ export class CompaniesController {
   }
 
   @Post()
-  create(@Body() body) {
-    return this.companiesService.create(body);
+  create(@Body() createCompanyDto: CreateCompanyDto) {
+    return this.companiesService.create(createCompanyDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() body) {
-    return this.companiesService.update(id, body);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
+    return this.companiesService.update(id, updateCompanyDto);
   }
 
   @Delete(':id')

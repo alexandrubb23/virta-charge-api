@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Company } from './entities/company.entity';
+import { CreateCompanyDto } from './dto/create-company.dto';
+import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Injectable()
 export class CompaniesService {
@@ -21,12 +23,12 @@ export class CompaniesService {
     return this.companies.find((company) => company.id === +id);
   }
 
-  create(companyDto: Company): Company {
+  create(companyDto: CreateCompanyDto): Company {
     this.companies.push(companyDto);
     return companyDto;
   }
 
-  update(id: string, companyDto: Company): Company {
+  update(id: string, companyDto: UpdateCompanyDto): any {
     const existingCompany = this.findOne(id);
     if (existingCompany) {
       // update the existing entity
