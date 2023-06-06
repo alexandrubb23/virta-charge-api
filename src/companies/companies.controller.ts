@@ -25,8 +25,8 @@ export class CompaniesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Company {
-    const company = this.companiesService.findOne(id);
+  findOne(@Param('id') id: number): Company {
+    const company = this.companiesService.findOne('' + id);
     // TODO: Use interceptors (filters)
     if (!company) throw new NotFoundException(`Company #${id} not found`);
 
