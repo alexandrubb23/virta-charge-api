@@ -6,13 +6,15 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 
 @Controller('companies')
 export class CompaniesController {
   @Get()
-  findAll(): string {
-    return 'This action returns all companies';
+  findAll(@Query() paginationQuery): string {
+    const { limit, offset } = paginationQuery;
+    return `This action returns all companies. Limit: ${limit}, offset: ${offset}`;
   }
 
   @Get(':id')

@@ -18,7 +18,12 @@ describe('CompaniesController', () => {
 
   describe('CRUD operations', () => {
     it('should return all companies', () => {
-      expect(controller.findAll()).toBe('This action returns all companies');
+      const limit = 20;
+      const offset = 10;
+
+      expect(controller.findAll({ limit, offset })).toBe(
+        `This action returns all companies. Limit: ${limit}, offset: ${offset}`,
+      );
     });
 
     it('should return a company', () => {
