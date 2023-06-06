@@ -22,9 +22,9 @@ export class CompaniesService {
     return this.companies.find((company) => company.id === +id);
   }
 
-  create(companyDto: CreateCompanyDto): any {
-    this.companies.push(companyDto);
-    return companyDto;
+  create(createCompanyDto: CreateCompanyDto): any {
+    this.companies.push(createCompanyDto);
+    return createCompanyDto;
   }
 
   update(id: string, companyDto: UpdateCompanyDto): any {
