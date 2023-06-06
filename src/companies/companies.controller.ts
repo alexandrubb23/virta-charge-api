@@ -3,6 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -23,7 +26,11 @@ export class CompaniesController {
 
   @Get(':id')
   findOne(@Param('id') id: string): Company {
-    return this.companiesService.findOne(id);
+    const company = this.companiesService.findOne(id);
+    // TODO: Use interceptors (filters)
+    if (!company) throw new NotFoundException(`Company #${id} not found`);
+
+    return company;
   }
 
   @Post()
