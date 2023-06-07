@@ -13,23 +13,20 @@ import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { Company } from './entities/company.entity';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
   @Get()
-  findAll(@Query() queryParams): Promise<Company[]> {
-    // console.log({ paginationQuery: queryParams });
-    // const { limit, offset } = paginationQuery;
-    return this.companiesService.findAll();
+  findAll(@Query() paginationQuery: PaginationQueryDto): Promise<Company[]> {
+    return this.companiesService.findAll(paginationQuery);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<Company> {
     const company = await this.companiesService.findOne(id);
-    // TODO: Use interceptors (filters)
-    if (!company) throw new NotFoundException(`Company #${id} not found`);
 
     return company;
   }

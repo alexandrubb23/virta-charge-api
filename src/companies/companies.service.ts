@@ -6,6 +6,7 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { ChargingStation } from './entities/charging-station.entity';
 import { Company } from './entities/company.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 @Injectable()
 export class CompaniesService {
@@ -16,11 +17,14 @@ export class CompaniesService {
     private readonly chargingStationsRepository: Repository<ChargingStation>,
   ) {}
 
-  async findAll(): Promise<Company[]> {
+  async findAll(paginationQuery?: PaginationQueryDto): Promise<Company[]> {
+    const { limit, offset } = paginationQuery || {};
     const companies = await this.companyRepository.find({
       relations: {
         charging_stations: true,
       },
+      skip: offset,
+      take: limit,
     });
 
     // The time complexity of the current algorithm is O(n^2)
@@ -41,6 +45,7 @@ export class CompaniesService {
     const companies = await this.findAll();
     const company = companies.find((c) => c.id === id);
 
+    // TODO: Use interceptors (filters)
     if (!company) {
       throw new NotFoundException(`Company #${id} not found`);
     }
