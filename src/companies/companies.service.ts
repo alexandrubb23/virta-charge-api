@@ -23,39 +23,23 @@ export class CompaniesService {
       },
     });
 
+    // The time complexity of the current algorithm is O(n^2)
+    // TODO: Improve the algorithm to have a time complexity of O(n + m)
+    // Where n is the companies length and m is the charging stations length
     companies.forEach((company) => {
-      const parentIds = [];
-
-      let parent = company;
-      while (parent.parentId !== 0) {
-        parentIds.unshift(parent.parentId);
+      let parent = companies.find((c) => c.id === company.parentId);
+      while (parent) {
+        parent.charging_stations.push(...company.charging_stations);
         parent = companies.find((c) => c.id === parent.parentId);
       }
-
-      parentIds.forEach((parentId) => {
-        const parentCompany = companies.find((c) => c.id === parentId);
-        const index = companies.indexOf(parentCompany);
-
-        companies[index] = {
-          ...parentCompany,
-          charging_stations: [
-            ...parentCompany.charging_stations,
-            ...company.charging_stations,
-          ],
-        };
-      });
     });
 
     return companies;
   }
 
   async findOne(id: number): Promise<Company> {
-    const company = await this.companyRepository.findOne({
-      where: { id },
-      relations: {
-        charging_stations: true,
-      },
-    });
+    const companies = await this.findAll();
+    const company = companies.find((c) => c.id === id);
 
     if (!company) {
       throw new NotFoundException(`Company #${id} not found`);
