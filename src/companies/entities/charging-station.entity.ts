@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Company } from './company.entity';
 
 @Entity()
@@ -23,12 +29,13 @@ export class ChargingStation {
   })
   longitude: number;
 
+  @Index()
   @Column()
   company_id: number;
 
   @Column()
   address: string;
 
-  @ManyToMany((type) => Company, (company) => company.charging_stations)
+  @ManyToMany(() => Company, (company) => company.charging_stations)
   company: Company;
 }

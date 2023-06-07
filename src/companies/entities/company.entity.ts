@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
@@ -16,6 +17,7 @@ export class Company {
   @Column()
   name: string;
 
+  @Index()
   @Column()
   parentId: number;
 

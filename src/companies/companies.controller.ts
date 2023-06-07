@@ -25,10 +25,8 @@ export class CompaniesController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Company> {
-    const company = await this.companiesService.findOne(id);
-
-    return company;
+  findOne(@Param('id') id: number): Promise<Company> {
+    return this.companiesService.findOne(id);
   }
 
   @Post()
