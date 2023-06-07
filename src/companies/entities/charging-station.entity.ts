@@ -2,17 +2,25 @@ import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Company } from './company.entity';
 
 @Entity()
-export class ChargingStations {
+export class ChargingStation {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   name: string;
 
-  @Column()
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 6,
+  })
   latitude: number;
 
-  @Column()
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 6,
+  })
   longitude: number;
 
   @Column()
@@ -22,5 +30,5 @@ export class ChargingStations {
   address: string;
 
   @ManyToMany((type) => Company, (company) => company.charging_stations)
-  companies: Company[];
+  company: Company;
 }

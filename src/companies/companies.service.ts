@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { ChargingStations } from './entities/charging-stations.entity';
+import { ChargingStation } from './entities/charging-station.entity';
 import { Company } from './entities/company.entity';
 
 @Injectable()
@@ -12,16 +12,41 @@ export class CompaniesService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
-    @InjectRepository(ChargingStations)
-    private readonly chargingStationsRepository: Repository<ChargingStations>,
+    @InjectRepository(ChargingStation)
+    private readonly chargingStationsRepository: Repository<ChargingStation>,
   ) {}
 
-  findAll(): Promise<Company[]> {
-    return this.companyRepository.find({
+  async findAll(): Promise<Company[]> {
+    const companies = await this.companyRepository.find({
       relations: {
         charging_stations: true,
       },
     });
+
+    companies.forEach((company) => {
+      const parentIds = [];
+
+      let parent = company;
+      while (parent.parentId !== 0) {
+        parentIds.unshift(parent.parentId);
+        parent = companies.find((c) => c.id === parent.parentId);
+      }
+
+      parentIds.forEach((parentId) => {
+        const parentCompany = companies.find((c) => c.id === parentId);
+        const index = companies.indexOf(parentCompany);
+
+        companies[index] = {
+          ...parentCompany,
+          charging_stations: [
+            ...parentCompany.charging_stations,
+            ...company.charging_stations,
+          ],
+        };
+      });
+    });
+
+    return companies;
   }
 
   async findOne(id: number): Promise<Company> {
@@ -78,8 +103,8 @@ export class CompaniesService {
 
   private async resolveAllChargingStations(
     actionCompanyDto: CreateCompanyDto | UpdateCompanyDto,
-  ): Promise<ChargingStations[]> {
-    const chargingStations: ChargingStations[] =
+  ): Promise<ChargingStation[]> {
+    const chargingStations: ChargingStation[] =
       actionCompanyDto.charging_stations.reduce(
         (chargingStations, chargingStation) => {
           const station = this.preloadChargingStation(chargingStation);
@@ -94,8 +119,8 @@ export class CompaniesService {
   }
 
   private async preloadChargingStation(
-    chargingStation: ChargingStations,
-  ): Promise<ChargingStations> {
+    chargingStation: ChargingStation,
+  ): Promise<ChargingStation> {
     const existingChargingStation =
       await this.chargingStationsRepository.findOne({
         where: { name: chargingStation.name },
@@ -106,5 +131,32 @@ export class CompaniesService {
     }
 
     return this.chargingStationsRepository.create({ ...chargingStation });
+  }
+
+  private withChargingStations(companies: Company[]) {
+    // The current algorithm has a time complexity of O(n^2)
+    // TODO: Improve the algorithm to have a time complexity of O(n)
+    return companies.forEach((company) => {
+      const parentIds = [];
+
+      let parent = company;
+      while (parent.parentId !== 0) {
+        parentIds.unshift(parent.parentId);
+        parent = companies.find((c) => c.id === parent.parentId);
+      }
+
+      parentIds.forEach((parentId) => {
+        const parentCompany = companies.find((c) => c.id === parentId);
+        const index = companies.indexOf(parentCompany);
+
+        companies[index] = {
+          ...parentCompany,
+          charging_stations: [
+            ...parentCompany.charging_stations,
+            ...company.charging_stations,
+          ],
+        };
+      });
+    }, []);
   }
 }

@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { ChargingStations } from './charging-stations.entity';
+import { ChargingStation } from './charging-station.entity';
 
 @Entity('companies')
 export class Company {
@@ -17,15 +17,15 @@ export class Company {
   name: string;
 
   @Column()
-  parent_company_id: number;
+  parentId: number;
 
   @JoinTable()
   @ManyToMany(
-    () => ChargingStations,
-    (chargingStation) => chargingStation.companies,
+    () => ChargingStation,
+    (chargingStation) => chargingStation.company,
     {
       cascade: true,
     },
   )
-  charging_stations: ChargingStations[];
+  charging_stations: ChargingStation[];
 }
