@@ -113,6 +113,8 @@ export class CompaniesService {
 
   private companiesWithChargingStations(companies: Company[]): Company[] {
     const chargingStations = (company: Company, companies: Company[]) => {
+      if (company.parentId === company.id) return [];
+
       const children = companies.filter((c) => c.parentId === company.id);
       if (children.length === 0) {
         return company.charging_stations;
