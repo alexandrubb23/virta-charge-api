@@ -20,7 +20,9 @@ export class CompaniesService {
   async findAll(paginationQuery?: PaginationQueryDto): Promise<Company[]> {
     const { limit, offset } = paginationQuery || {};
     const companies = await this.companyRepository.find({
-      relations: ['charging_stations'],
+      relations: {
+        charging_stations: true,
+      },
       skip: offset,
       take: limit,
     });
