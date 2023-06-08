@@ -3,17 +3,16 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { Company } from './entities/company.entity';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { Company } from './entities/company.entity';
 
 @Controller('companies')
 export class CompaniesController {
