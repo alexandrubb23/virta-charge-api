@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { ChargingStation } from './entities/charging-station.entity';
 import { Company } from './entities/company.entity';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 
 @Injectable()
 export class CompaniesService {

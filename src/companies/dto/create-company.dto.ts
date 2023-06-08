@@ -1,5 +1,5 @@
 import { IsNumber, IsObject, IsString } from 'class-validator';
-import { ChargingStation } from '../entities/charging-station.entity';
+import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 
 export class CreateCompanyDto {
   @IsString()

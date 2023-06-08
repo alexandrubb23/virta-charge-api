@@ -1,3 +1,4 @@
+import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 import {
   Column,
   Entity,
@@ -6,8 +7,6 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-import { ChargingStation } from './charging-station.entity';
 
 @Entity('companies')
 export class Company {

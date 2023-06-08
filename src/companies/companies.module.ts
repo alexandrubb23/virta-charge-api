@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CompaniesController } from './companies.controller';
 import { CompaniesService } from './companies.service';
 import { Company } from './entities/company.entity';
-import { ChargingStation } from './entities/charging-station.entity';
+import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Company, ChargingStation])],
