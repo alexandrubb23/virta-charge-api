@@ -1,5 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ChargingStationsService } from './charging-stations.service';
+import { CreateChargingStationDto } from './dto/create-charging-station.dto';
+import { ChargingStation } from './entities/charging-station.entity';
 
 @Controller('charging-stations')
 export class ChargingStationsController {
@@ -7,7 +9,12 @@ export class ChargingStationsController {
     private readonly chargingStationService: ChargingStationsService,
   ) {}
   @Get()
-  findAll() {
+  findAll(): Promise<ChargingStation[]> {
     return this.chargingStationService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: number): Promise<ChargingStation> {
+    return this.chargingStationService.findOne(id);
   }
 }
