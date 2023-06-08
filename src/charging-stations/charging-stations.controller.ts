@@ -17,4 +17,11 @@ export class ChargingStationsController {
   findOne(@Param('id') id: number): Promise<ChargingStation> {
     return this.chargingStationService.findOne(id);
   }
+
+  @Post()
+  create(
+    @Body() createChargingStationDto: CreateChargingStationDto,
+  ): Promise<ChargingStation> {
+    return this.chargingStationService.create(createChargingStationDto);
+  }
 }

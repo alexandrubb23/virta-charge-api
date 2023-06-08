@@ -17,6 +17,7 @@ export class ChargingStationsService {
     private readonly chargingStationsRepository: Repository<ChargingStation>,
     @InjectRepository(Company)
     private readonly companiesRepository: Repository<Company>,
+    private readonly dataSource: DataSource,
   ) {}
 
   findAll(): Promise<ChargingStation[]> {
@@ -37,5 +38,44 @@ export class ChargingStationsService {
     }
 
     return charginStation;
+  }
+
+  async create(
+    createChargingStationDto: CreateChargingStationDto,
+  ): Promise<ChargingStation> {
+    const options = {
+      where: { id: createChargingStationDto.company_id },
+      relations: {
+        charging_stations: true,
+      },
+    };
+
+    const company = await this.companiesRepository.findOne(options);
+
+    if (!company) {
+      throw new BadRequestException('Company with the given id not found');
+    }
+
+    const chargingStation = this.chargingStationsRepository.create(
+      createChargingStationDto,
+    );
+
+    company.charging_stations.push(chargingStation);
+
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await this.chargingStationsRepository.save(chargingStation);
+      await this.companiesRepository.save(company);
+
+      return chargingStation;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
