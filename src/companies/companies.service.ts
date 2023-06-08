@@ -20,25 +20,12 @@ export class CompaniesService {
   async findAll(paginationQuery?: PaginationQueryDto): Promise<Company[]> {
     const { limit, offset } = paginationQuery || {};
     const companies = await this.companyRepository.find({
-      relations: {
-        charging_stations: true,
-      },
+      relations: ['charging_stations'],
       skip: offset,
       take: limit,
     });
 
-    // The time complexity of the current algorithm is O(n^2)
-    // TODO: Improve the algorithm to have a time complexity of O(n + m)
-    // Where n is the companies length and m is the charging stations length
-    companies.forEach((company) => {
-      let parent = companies.find((c) => c.id === company.parentId);
-      while (parent) {
-        parent.charging_stations.push(...company.charging_stations);
-        parent = companies.find((c) => c.id === parent.parentId);
-      }
-    });
-
-    return companies;
+    return this.companiesWithChargingStations(companies);
   }
 
   async findOne(id: number): Promise<Company> {
@@ -122,30 +109,27 @@ export class CompaniesService {
     return this.chargingStationsRepository.create({ ...chargingStation });
   }
 
-  private withChargingStations(companies: Company[]) {
-    // The current algorithm has a time complexity of O(n^2)
-    // TODO: Improve the algorithm to have a time complexity of O(n)
-    return companies.forEach((company) => {
-      const parentIds = [];
-
-      let parent = company;
-      while (parent.parentId !== 0) {
-        parentIds.unshift(parent.parentId);
-        parent = companies.find((c) => c.id === parent.parentId);
+  private companiesWithChargingStations(companies: Company[]): Company[] {
+    const chargingStations = (company: Company, companies: Company[]) => {
+      const children = companies.filter((c) => c.parentId === company.id);
+      if (children.length === 0) {
+        return company.charging_stations;
       }
 
-      parentIds.forEach((parentId) => {
-        const parentCompany = companies.find((c) => c.id === parentId);
-        const index = companies.indexOf(parentCompany);
+      return children.flatMap((company) => [
+        ...company.charging_stations,
+        ...chargingStations(company, companies),
+      ]);
+    };
 
-        companies[index] = {
-          ...parentCompany,
-          charging_stations: [
-            ...parentCompany.charging_stations,
-            ...company.charging_stations,
-          ],
-        };
-      });
-    }, []);
+    return companies.map((company) => ({
+      ...company,
+      charging_stations: [
+        ...new Set([
+          ...company.charging_stations,
+          ...chargingStations(company, companies),
+        ]),
+      ],
+    }));
   }
 }
