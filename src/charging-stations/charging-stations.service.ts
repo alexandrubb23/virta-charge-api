@@ -4,27 +4,27 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, FindOneOptions, Repository } from 'typeorm';
 
-import { ChargingStation } from './entities/charging-station.entity';
+import { CharginStationsRepository } from 'src/repositories/chargin-stations-repository.abstarct';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
-import { Company } from 'src/companies/entities/company.entity';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
+import { ChargingStation } from './entities/charging-station.entity';
+import { DataSource, FindOneOptions, Repository } from 'typeorm';
 import { SaveChargingStationInterface } from './models/charging-station.interface';
+import { Company } from 'src/companies/entities/company.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ChargingStationsService {
   constructor(
-    @InjectRepository(ChargingStation)
-    private readonly chargingStationsRepository: Repository<ChargingStation>,
+    private readonly chargingStationsRepository: CharginStationsRepository,
     @InjectRepository(Company)
     private readonly companiesRepository: Repository<Company>,
     private readonly dataSource: DataSource,
   ) {}
 
   findAll(): Promise<ChargingStation[]> {
-    return this.chargingStationsRepository.find();
+    return this.chargingStationsRepository.findAll();
   }
 
   async findOne(id: number): Promise<ChargingStation> {
@@ -49,38 +49,19 @@ export class ChargingStationsService {
     radius: number,
     company_id?: number,
   ): Promise<ChargingStation[]> {
-    const chargingStations = await this.chargingStationsRepository
-      .createQueryBuilder('charging_stations')
-      .select('charging_stations.*')
-      .addSelect(
-        `ST_Distance(
-      ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326),
-      ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography
-    ) as distance`,
-      )
-      .where(
-        `ST_DWithin(
-      ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
-      ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
-      :radius -- Radius in meters (1 kilometer = 1000 meters)
-    )`,
-        { longitude, latitude, radius },
-      )
-      // .andWhere('charging_stations.company_id = :company_id', { company_id })
-      .groupBy(
-        'charging_stations.id, charging_stations.latitude, charging_stations.longitude',
-      )
-      .orderBy('distance', 'ASC')
-      .getRawMany();
-
-    return chargingStations;
+    return this.chargingStationsRepository.findNearbyChargingStations({
+      latitude,
+      longitude,
+      radius,
+      company_id,
+    });
   }
 
   async create(
     createChargingStationDto: CreateChargingStationDto,
   ): Promise<ChargingStation> {
     const company = await this.findCompany(createChargingStationDto.company_id);
-    const chargingStation = this.chargingStationsRepository.create(
+    const chargingStation = await this.chargingStationsRepository.create(
       createChargingStationDto,
     );
 
