@@ -7,9 +7,13 @@ import { AppService } from './app.service';
 import { ChargingStationsModule } from './charging-stations/charging-stations.module';
 import { CompaniesModule } from './companies/companies.module';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      ignoreEnvFile: isProduction,
+    }),
     CompaniesModule,
     ChargingStationsModule,
     TypeOrmModule.forRoot({
@@ -19,8 +23,8 @@ import { CompaniesModule } from './companies/companies.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_DB,
-      autoLoadEntities: process.env.NODE_ENV !== 'production',
-      synchronize: process.env.NODE_ENV !== 'production',
+      autoLoadEntities: !isProduction,
+      synchronize: !isProduction,
     }),
   ],
   controllers: [AppController],
