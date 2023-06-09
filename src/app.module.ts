@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChargingStationsModule } from './charging-stations/charging-stations.module';
 import { CompaniesModule } from './companies/companies.module';
+import { databaseSchema } from './validation';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -13,6 +14,7 @@ const isProduction = process.env.NODE_ENV === 'production';
   imports: [
     ConfigModule.forRoot({
       ignoreEnvFile: isProduction,
+      validationSchema: databaseSchema,
     }),
     CompaniesModule,
     ChargingStationsModule,
