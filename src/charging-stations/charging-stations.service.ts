@@ -54,32 +54,22 @@ export class ChargingStationsService {
       .select('charging_stations.*')
       .addSelect(
         `ST_Distance(
-          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326),
-          ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography
-        ) as distance`,
+      ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326),
+      ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography
+    ) as distance`,
       )
       .where(
         `ST_DWithin(
-          ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
-          ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
-          :radius -- Radius in meters (1 kilometer = 1000 meters)
-        )`,
+      ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
+      ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
+      :radius -- Radius in meters (1 kilometer = 1000 meters)
+    )`,
         { longitude, latitude, radius },
       )
-      // .where('charging_stations.company_id = :company_id', { company_id })
-      //     .andWhere(
-      //       `
-      //   ST_DWithin(
-      //     ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326),
-      //     ST_SetSRID(ST_MakePoint(
-      //       CAST(SPLIT_PART(charging_stations.address, ',', 1) AS DOUBLE PRECISION),
-      //       CAST(SPLIT_PART(charging_stations.address, ',', 2) AS DOUBLE PRECISION)
-      //     ), 4326),
-      //     :radius
-      //   )
-      // `,
-      //       { radius, longitude, latitude },
-      //     )
+      // .andWhere('charging_stations.company_id = :company_id', { company_id })
+      .groupBy(
+        'charging_stations.id, charging_stations.latitude, charging_stations.longitude',
+      )
       .orderBy('distance', 'ASC')
       .getRawMany();
 

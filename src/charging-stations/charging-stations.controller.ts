@@ -33,11 +33,13 @@ export class ChargingStationsController {
     @Query('latitude') latitude: number,
     @Query('longitude') longitude: number,
     @Query('radius') radius: number,
+    @Query('company_id') company_id?: number,
   ): Promise<ChargingStation[]> {
     return this.chargingStationService.findNearbyChargingStations(
       latitude,
       longitude,
       radius,
+      company_id,
     );
   }
 
