@@ -1,1 +1,1 @@
-export { default as databaseSchema } from './databaseSchema';
+export { default as databaseSchema } from './db-validation.schema';
