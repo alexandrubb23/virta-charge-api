@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ChargingStationsService } from './charging-stations.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
@@ -22,9 +23,22 @@ export class ChargingStationsController {
     return this.chargingStationService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: number): Promise<ChargingStation> {
-    return this.chargingStationService.findOne(id);
+  // @Get(':id')
+  // findOne(@Param('id') id: number): Promise<ChargingStation> {
+  //   return this.chargingStationService.findOne(id);
+  // }
+
+  @Get('nearby')
+  findNearbyChargingStations(
+    @Query('latitude') latitude: number,
+    @Query('longitude') longitude: number,
+    @Query('radius') radius: number,
+  ): Promise<ChargingStation[]> {
+    return this.chargingStationService.findNearbyChargingStations(
+      latitude,
+      longitude,
+      radius,
+    );
   }
 
   @Post()

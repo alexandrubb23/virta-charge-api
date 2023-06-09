@@ -43,6 +43,49 @@ export class ChargingStationsService {
     return chargingStation;
   }
 
+  async findNearbyChargingStations(
+    latitude: number,
+    longitude: number,
+    radius: number,
+    company_id?: number,
+  ): Promise<ChargingStation[]> {
+    const chargingStations = await this.chargingStationsRepository
+      .createQueryBuilder('charging_stations')
+      .select('charging_stations.*')
+      .addSelect(
+        `ST_Distance(
+          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326),
+          ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography
+        ) as distance`,
+      )
+      .where(
+        `ST_DWithin(
+          ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
+          ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
+          :radius -- Radius in meters (1 kilometer = 1000 meters)
+        )`,
+        { longitude, latitude, radius },
+      )
+      // .where('charging_stations.company_id = :company_id', { company_id })
+      //     .andWhere(
+      //       `
+      //   ST_DWithin(
+      //     ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326),
+      //     ST_SetSRID(ST_MakePoint(
+      //       CAST(SPLIT_PART(charging_stations.address, ',', 1) AS DOUBLE PRECISION),
+      //       CAST(SPLIT_PART(charging_stations.address, ',', 2) AS DOUBLE PRECISION)
+      //     ), 4326),
+      //     :radius
+      //   )
+      // `,
+      //       { radius, longitude, latitude },
+      //     )
+      .orderBy('distance', 'ASC')
+      .getRawMany();
+
+    return chargingStations;
+  }
+
   async create(
     createChargingStationDto: CreateChargingStationDto,
   ): Promise<ChargingStation> {
