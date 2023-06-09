@@ -34,7 +34,6 @@ export class CompaniesService {
     const companies = await this.findAll();
     const company = companies.find((c) => c.id === id);
 
-    // TODO: Use interceptors (filters)
     if (!company) {
       throw new NotFoundException(`Company #${id} not found`);
     }
@@ -112,28 +111,31 @@ export class CompaniesService {
   }
 
   private companiesWithChargingStations(companies: Company[]): Company[] {
-    const chargingStations = (company: Company, companies: Company[]) => {
+    const chargingStations = (company: Company, allCompanies: Company[]) => {
       if (company.parentId === company.id) return [];
 
-      const children = companies.filter((c) => c.parentId === company.id);
+      const children = allCompanies.filter((c) => c.parentId === company.id);
       if (children.length === 0) {
         return company.charging_stations;
       }
 
-      return children.flatMap((company) => [
-        ...company.charging_stations,
-        ...chargingStations(company, companies),
+      return children.flatMap((childCompany) => [
+        ...childCompany.charging_stations,
+        ...chargingStations(childCompany, allCompanies),
       ]);
     };
 
     return companies.map((company) => ({
       ...company,
       charging_stations: [
-        ...new Set([
-          ...company.charging_stations,
-          ...chargingStations(company, companies),
-        ]),
-      ],
+        ...company.charging_stations,
+        ...chargingStations(company, companies),
+      ].filter((chargingStation, index, self) => {
+        return (
+          chargingStation &&
+          index === self.findIndex((c) => c.id === chargingStation.id)
+        );
+      }),
     }));
   }
 }
