@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ChargingStationsService } from './charging-stations.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { ChargingStation } from './entities/charging-station.entity';
@@ -32,5 +40,10 @@ export class ChargingStationsController {
     @Body() updateChargingStationDto: UpdateChargingStationDto,
   ): Promise<ChargingStation> {
     return this.chargingStationService.update(id, updateChargingStationDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: number): Promise<ChargingStation> {
+    return this.chargingStationService.remove(id);
   }
 }

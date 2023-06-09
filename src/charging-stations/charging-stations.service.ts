@@ -87,6 +87,27 @@ export class ChargingStationsService {
     return updatedChargingStation;
   }
 
+  async remove(id: number): Promise<ChargingStation> {
+    const options: FindOneOptions<ChargingStation> = {
+      where: { id },
+      relations: ['company'],
+    };
+
+    const chargingStation = await this.chargingStationsRepository.findOne(
+      options,
+    );
+
+    if (!chargingStation) {
+      throw new BadRequestException(`Charging Station #${id} not found`);
+    }
+
+    chargingStation.company = null;
+
+    await this.chargingStationsRepository.remove(chargingStation);
+
+    return chargingStation;
+  }
+
   private async findCompany(id: number): Promise<Company> {
     const options: FindOneOptions<Company> = {
       where: { id },
