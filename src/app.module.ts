@@ -7,8 +7,8 @@ import { AppService } from './app.service';
 import { ChargingStationsModule } from './charging-stations/charging-stations.module';
 import { CompaniesModule } from './companies/companies.module';
 import { databaseSchema } from './validation';
-
-const isProduction = process.env.NODE_ENV === 'production';
+import { databaseConfig } from './config';
+import isProduction from './utils/environment';
 
 @Module({
   imports: [
@@ -18,16 +18,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     }),
     CompaniesModule,
     ChargingStationsModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DATABASE_HOST,
-      port: +process.env.DATABASE_PORT,
-      username: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_DB,
-      autoLoadEntities: !isProduction,
-      synchronize: !isProduction,
-    }),
+    TypeOrmModule.forRoot(databaseConfig()),
   ],
   controllers: [AppController],
   providers: [AppService],
