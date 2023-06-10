@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -26,27 +27,27 @@ export class ChargingStationsController {
     return this.chargingStationService.findAll();
   }
 
-  // @Public()
-  // @Get(':id')
-  // findOne(@Param('id') id: number): Promise<ChargingStation> {
-  //   return this.chargingStationService.findOne(id);
-  // }
-
   @Public()
-  @Get('nearby')
-  findNearbyChargingStations(
-    @Query('latitude') latitude: number,
-    @Query('longitude') longitude: number,
-    @Query('radius') radius: number,
-    @Query('company_id') company_id?: number,
-  ): Promise<ChargingStation[]> {
-    return this.chargingStationService.findNearbyChargingStations(
-      latitude,
-      longitude,
-      radius,
-      company_id,
-    );
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
+    return this.chargingStationService.findOne(id);
   }
+
+  // @Public()
+  // @Get('nearby')
+  // findNearbyChargingStations(
+  //   @Query('latitude') latitude: number,
+  //   @Query('longitude') longitude: number,
+  //   @Query('radius') radius: number,
+  //   @Query('company_id') company_id?: number,
+  // ): Promise<ChargingStation[]> {
+  //   return this.chargingStationService.findNearbyChargingStations(
+  //     latitude,
+  //     longitude,
+  //     radius,
+  //     company_id,
+  //   );
+  // }
 
   @Post()
   create(
@@ -57,14 +58,14 @@ export class ChargingStationsController {
 
   @Patch(':id')
   update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateChargingStationDto: UpdateChargingStationDto,
   ): Promise<ChargingStation> {
     return this.chargingStationService.update(id, updateChargingStationDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<ChargingStation> {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
     return this.chargingStationService.remove(id);
   }
 }
