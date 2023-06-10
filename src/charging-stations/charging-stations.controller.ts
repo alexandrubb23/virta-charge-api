@@ -20,17 +20,17 @@ export class ChargingStationsController {
     private readonly chargingStationService: ChargingStationsService,
   ) {}
 
-  // @Public()
-  // @Get()
-  // findAll(): Promise<ChargingStation[]> {
-  //   return this.chargingStationService.findAll();
-  // }
-
   @Public()
-  @Get(':id')
-  findOne(@Param('id') id: number): Promise<ChargingStation> {
-    return this.chargingStationService.findOne(id);
+  @Get()
+  findAll(): Promise<ChargingStation[]> {
+    return this.chargingStationService.findAll();
   }
+
+  // @Public()
+  // @Get(':id')
+  // findOne(@Param('id') id: number): Promise<ChargingStation> {
+  //   return this.chargingStationService.findOne(id);
+  // }
 
   @Public()
   @Get('nearby')

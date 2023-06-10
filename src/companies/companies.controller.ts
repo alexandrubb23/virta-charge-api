@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
@@ -14,17 +15,23 @@ import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
+import {
+  CompanyChargingStationsInterceptor,
+  CompaniesChargingStationsInterceptor,
+} from './interceptors';
 
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
+  @UseInterceptors(CompaniesChargingStationsInterceptor)
   @Public()
   @Get()
   findAll(@Query() paginationQuery: PaginationQueryDto): Promise<Company[]> {
     return this.companiesService.findAll(paginationQuery);
   }
 
+  @UseInterceptors(CompanyChargingStationsInterceptor)
   @Public()
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Company> {
