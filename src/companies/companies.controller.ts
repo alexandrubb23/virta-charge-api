@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -34,7 +35,7 @@ export class CompaniesController {
   @UseInterceptors(CompanyChargingStationsInterceptor)
   @Public()
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Company> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Company> {
     return this.companiesService.findOne(id);
   }
 
@@ -44,12 +45,15 @@ export class CompaniesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateCompanyDto: UpdateCompanyDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCompanyDto: UpdateCompanyDto,
+  ) {
     return this.companiesService.update(id, updateCompanyDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.companiesService.remove(id);
   }
 }
