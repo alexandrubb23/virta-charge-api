@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { ChargingStationsModule } from './charging-stations/charging-stations.module';
 import { CompaniesModule } from './companies/companies.module';
 import { databaseSchema } from './validation';
+import { CommonModule } from './common/common.module';
 import isProduction from './utils/environment';
 
 @Module({
@@ -29,6 +30,7 @@ import isProduction from './utils/environment';
         synchronize: !isProduction,
       }),
     }),
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
