@@ -27,27 +27,27 @@ export class ChargingStationsController {
     return this.chargingStationService.findAll();
   }
 
-  @Public()
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
-    return this.chargingStationService.findOne(id);
-  }
-
   // @Public()
-  // @Get('nearby')
-  // findNearbyChargingStations(
-  //   @Query('latitude') latitude: number,
-  //   @Query('longitude') longitude: number,
-  //   @Query('radius') radius: number,
-  //   @Query('company_id') company_id?: number,
-  // ): Promise<ChargingStation[]> {
-  //   return this.chargingStationService.findNearbyChargingStations(
-  //     latitude,
-  //     longitude,
-  //     radius,
-  //     company_id,
-  //   );
+  // @Get(':id')
+  // findOne(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
+  //   return this.chargingStationService.findOne(id);
   // }
+
+  @Public()
+  @Get('nearby')
+  findNearbyChargingStations(
+    @Query('latitude') latitude: number,
+    @Query('longitude') longitude: number,
+    @Query('radius') radius: number,
+    @Query('company_id') company_id?: number,
+  ): Promise<ChargingStation[]> {
+    return this.chargingStationService.findNearbyChargingStations(
+      latitude,
+      longitude,
+      radius,
+      company_id,
+    );
+  }
 
   @Post()
   create(

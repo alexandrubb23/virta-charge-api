@@ -1,39 +1,37 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
+import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { DataService } from 'src/common/repository/data-service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
+import { FindManyOptions } from 'typeorm';
 
 @Injectable()
 export class CompaniesService {
-  constructor(
-    @InjectRepository(Company)
-    private readonly companyRepository: Repository<Company>,
-    @InjectRepository(ChargingStation)
-    private readonly chargingStationsRepository: Repository<ChargingStation>,
-  ) {}
+  constructor(private readonly dataService: DataService) {}
 
   async findAll(paginationQuery?: PaginationQueryDto): Promise<Company[]> {
     const { limit, offset } = paginationQuery || {};
-    const companies = await this.companyRepository.find({
+
+    const options: FindManyOptions = {
       relations: {
         charging_stations: true,
       },
       skip: offset,
       take: limit,
-    });
+    };
 
-    return companies;
+    return this.dataService.companies.findAll(options);
   }
 
   async findOne(id: number): Promise<Company> {
-    const company = await this.companyRepository.findOne({
+    const options = {
       where: { id },
-    });
+    };
+
+    const company = await this.dataService.companies.findOne(options);
 
     if (!company) {
       throw new NotFoundException(`Company #${id} not found`);
@@ -43,14 +41,14 @@ export class CompaniesService {
   }
 
   async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
-    const company = this.companyRepository.create({
+    const company = this.dataService.companies.save({
       ...createCompanyDto,
       charging_stations: await this.resolveAllChargingStations(
         createCompanyDto,
       ),
     });
 
-    return this.companyRepository.save(company);
+    return company;
   }
 
   async update(
@@ -61,7 +59,7 @@ export class CompaniesService {
       updateCompanyDto.charging_stations &&
       (await this.resolveAllChargingStations(updateCompanyDto));
 
-    const company = await this.companyRepository.preload({
+    const company = await this.dataService.companies.preload({
       id,
       ...updateCompanyDto,
       charging_stations,
@@ -71,12 +69,12 @@ export class CompaniesService {
       throw new NotFoundException(`Company #${id} not found`);
     }
 
-    return this.companyRepository.save(company);
+    return this.dataService.companies.save(company);
   }
 
   async remove(id: number) {
     const company = await this.findOne(id);
-    return this.companyRepository.remove(company);
+    return this.dataService.companies.remove(company);
   }
 
   private async resolveAllChargingStations(
@@ -100,7 +98,7 @@ export class CompaniesService {
     chargingStation: ChargingStation,
   ): Promise<ChargingStation> {
     const existingChargingStation =
-      await this.chargingStationsRepository.findOne({
+      await this.dataService.chargingStations.findOne({
         where: { name: chargingStation.name },
       });
 
@@ -108,6 +106,6 @@ export class CompaniesService {
       return existingChargingStation;
     }
 
-    return this.chargingStationsRepository.create({ ...chargingStation });
+    return this.dataService.chargingStations.create({ ...chargingStation });
   }
 }
