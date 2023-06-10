@@ -1,7 +1,8 @@
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import { GenericRepository } from '../generic-repository';
-import { NearbyChargingStationsQuery } from 'src/repositories/chargin-stations-repository.abstarct';
+import {
+  GenericRepository,
+  NearbyChargingStationsQuery,
+} from '../generic-repository';
 
 export class PostgresGenericRepository<T> implements GenericRepository<T> {
   constructor(private readonly repository: Repository<T>) {}

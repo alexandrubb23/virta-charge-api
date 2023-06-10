@@ -1,5 +1,11 @@
-import { NearbyChargingStationsQuery } from 'src/repositories/chargin-stations-repository.abstarct';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
+
+export type NearbyChargingStationsQuery = {
+  company_id?: number;
+  latitude: number;
+  longitude: number;
+  radius: number;
+};
 
 export abstract class GenericRepository<T> {
   abstract findAll(options?: FindManyOptions<T>): Promise<T[]>;
