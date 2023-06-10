@@ -21,6 +21,7 @@ export class TimeoutInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const timeoutRequest = this.configService.get(
       'API_REQUEST_TIMEOUT',
+      10000,
     ) as number;
 
     return next.handle().pipe(
