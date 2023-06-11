@@ -70,12 +70,6 @@ export class ChargingStationsService {
   }
 
   async update(id: number, updateChargingStationDto: UpdateChargingStationDto) {
-    if (Object.keys(updateChargingStationDto).length === 0) {
-      throw new UnprocessableEntityException(
-        'No fields to update were provided',
-      );
-    }
-
     await this.findCompany(updateChargingStationDto.company_id);
 
     const options: FindOneOptions<ChargingStation> = {

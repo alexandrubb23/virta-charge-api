@@ -20,6 +20,7 @@ import {
   CompanyChargingStationsInterceptor,
   CompaniesChargingStationsInterceptor,
 } from './interceptors';
+import { FieldsToUpdateValidatorPipe } from 'src/common/pipes/fields-to-update-validator.pipe';
 
 @Controller('companies')
 export class CompaniesController {
@@ -47,7 +48,7 @@ export class CompaniesController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateCompanyDto: UpdateCompanyDto,
+    @Body(FieldsToUpdateValidatorPipe) updateCompanyDto: UpdateCompanyDto,
   ) {
     return this.companiesService.update(id, updateCompanyDto);
   }
