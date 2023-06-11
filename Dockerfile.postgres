@@ -1,0 +1,7 @@
+FROM postgres:latest
+
+# Install PostGIS extension
+RUN apt-get update && apt-get install -y postgis
+
+# Set the entrypoint or default command for the container
+CMD ["postgres", "-c", "shared_preload_libraries=pg_stat_statements"]

@@ -3,10 +3,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { DataService } from 'src/common/repository/data-service';
+import { FindManyOptions } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
-import { FindManyOptions } from 'typeorm';
 
 @Injectable()
 export class CompaniesService {
@@ -29,6 +29,9 @@ export class CompaniesService {
   async findOne(id: number): Promise<Company> {
     const options = {
       where: { id },
+      relations: {
+        charging_stations: true,
+      },
     };
 
     const company = await this.dataService.companies.findOne(options);
@@ -43,9 +46,7 @@ export class CompaniesService {
   async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
     const company = this.dataService.companies.save({
       ...createCompanyDto,
-      charging_stations: await this.resolveAllChargingStations(
-        createCompanyDto,
-      ),
+      charging_stations: [],
     });
 
     return company;
@@ -55,14 +56,9 @@ export class CompaniesService {
     id: number,
     updateCompanyDto: UpdateCompanyDto,
   ): Promise<Company> {
-    const charging_stations =
-      updateCompanyDto.charging_stations &&
-      (await this.resolveAllChargingStations(updateCompanyDto));
-
     const company = await this.dataService.companies.preload({
       id,
       ...updateCompanyDto,
-      charging_stations,
     });
 
     if (!company) {
@@ -74,38 +70,21 @@ export class CompaniesService {
 
   async remove(id: number) {
     const company = await this.findOne(id);
-    return this.dataService.companies.remove(company);
+
+    // TODO: Should we use transaction here?
+    const removeCompany = await this.dataService.companies.remove(company);
+    await this.removeMultipleChargingStations(company.charging_stations);
+
+    return removeCompany;
   }
 
-  private async resolveAllChargingStations(
-    actionCompanyDto: CreateCompanyDto | UpdateCompanyDto,
-  ): Promise<ChargingStation[]> {
-    const chargingStations: ChargingStation[] =
-      actionCompanyDto.charging_stations.reduce(
-        (chargingStations, chargingStation) => {
-          const station = this.preloadChargingStation(chargingStation);
-          chargingStations.push(station);
-
-          return chargingStations;
-        },
-        [],
-      );
-
-    return await Promise.all(chargingStations);
-  }
-
-  private async preloadChargingStation(
-    chargingStation: ChargingStation,
-  ): Promise<ChargingStation> {
-    const existingChargingStation =
-      await this.dataService.chargingStations.findOne({
-        where: { name: chargingStation.name },
-      });
-
-    if (existingChargingStation) {
-      return existingChargingStation;
+  private async removeMultipleChargingStations(
+    chargingStations: ChargingStation[],
+  ) {
+    // TODO: There must be a better way to do this.
+    // Cascade delete maybe?
+    for (const chargingStation of chargingStations) {
+      await this.dataService.chargingStations.remove(chargingStation);
     }
-
-    return this.dataService.chargingStations.create({ ...chargingStation });
   }
 }

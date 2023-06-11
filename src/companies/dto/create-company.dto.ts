@@ -1,13 +1,13 @@
-import { IsNumber, IsObject, IsString } from 'class-validator';
-import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateCompanyDto {
+  @ApiProperty({ description: 'The name of the company' })
+  @IsNotEmpty()
   @IsString()
   readonly name: string;
 
+  @ApiProperty({ description: 'The parent company id' })
   @IsNumber()
   readonly parentId: number;
-
-  @IsObject({ each: true })
-  readonly charging_stations: ChargingStation[];
 }

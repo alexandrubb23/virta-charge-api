@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import { Company } from 'src/companies/entities/company.entity';
 import {
   Column,
@@ -36,6 +37,7 @@ export class ChargingStation {
   @Column()
   address: string;
 
+  @ApiHideProperty()
   @ManyToMany(() => Company, (company) => company.charging_stations)
   company: Company;
 }

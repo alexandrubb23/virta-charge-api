@@ -11,6 +11,7 @@ import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { DataService } from 'src/common/repository/data-service';
 import { SaveChargingStationInterface } from './models/charging-station.interface';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
+import { SearchCharginStationsQueryDto } from 'src/common/dto/search-charging-stations-query.dto';
 
 @Injectable()
 export class ChargingStationsService {
@@ -40,16 +41,10 @@ export class ChargingStationsService {
   }
 
   async findNearbyChargingStations(
-    latitude: number,
-    longitude: number,
-    radius: number,
-    company_id?: number,
+    searchChargingStationsQuery: SearchCharginStationsQueryDto,
   ): Promise<ChargingStation[]> {
     return this.dataService.chargingStations.findNearbyChargingStations({
-      latitude,
-      longitude,
-      radius,
-      company_id,
+      ...searchChargingStationsQuery,
     });
   }
 
@@ -69,7 +64,9 @@ export class ChargingStationsService {
   }
 
   async update(id: number, updateChargingStationDto: UpdateChargingStationDto) {
-    await this.findCompany(updateChargingStationDto.company_id);
+    const { company_id } = updateChargingStationDto;
+
+    await this.findCompany(company_id);
 
     const options: FindOneOptions<ChargingStation> = {
       where: { id },
@@ -90,6 +87,8 @@ export class ChargingStationsService {
       },
     );
 
+    this.updateCompaniesChargingStationsTable(company_id, chargingStation.id);
+
     return updatedChargingStation;
   }
 
@@ -109,9 +108,7 @@ export class ChargingStationsService {
 
     chargingStation.company = null;
 
-    await this.dataService.chargingStations.remove(chargingStation);
-
-    return chargingStation;
+    return this.dataService.chargingStations.remove(chargingStation);
   }
 
   private async findCompany(id: number): Promise<Company> {
@@ -148,5 +145,23 @@ export class ChargingStationsService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  private updateCompaniesChargingStationsTable(
+    companiesId: number,
+    chargingStationId: number,
+  ) {
+    if (!companiesId) {
+      return;
+    }
+
+    this.dataSource
+      .createQueryBuilder()
+      .update('companies_charging_stations_charging_station')
+      .set({ companiesId })
+      .where('chargingStationId = :chargingStationId', {
+        chargingStationId,
+      })
+      .execute();
   }
 }
