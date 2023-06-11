@@ -38,7 +38,7 @@ export class ChargingStationsController {
 
   @ApiQuery({ name: 'company_id', required: false })
   @Public()
-  @Get('nearby')
+  @Get('search')
   findNearbyChargingStations(
     @Query() searchChargingStationsQuery: SearchCharginStationsQueryDto,
   ): Promise<ChargingStation[]> {
