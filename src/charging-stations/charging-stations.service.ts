@@ -2,29 +2,25 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
+import { DataSource, FindOneOptions } from 'typeorm';
 
-import { CharginStationsRepository } from 'src/repositories/chargin-stations-repository.abstarct';
-import { CreateChargingStationDto } from './dto/create-charging-station.dto';
-import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ChargingStation } from './entities/charging-station.entity';
-import { DataSource, FindOneOptions, Repository } from 'typeorm';
-import { SaveChargingStationInterface } from './models/charging-station.interface';
 import { Company } from 'src/companies/entities/company.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { CreateChargingStationDto } from './dto/create-charging-station.dto';
+import { DataService } from 'src/common/repository/data-service';
+import { SaveChargingStationInterface } from './models/charging-station.interface';
+import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 
 @Injectable()
 export class ChargingStationsService {
   constructor(
-    private readonly chargingStationsRepository: CharginStationsRepository,
-    @InjectRepository(Company)
-    private readonly companiesRepository: Repository<Company>,
     private readonly dataSource: DataSource,
+    private readonly dataService: DataService,
   ) {}
 
   findAll(): Promise<ChargingStation[]> {
-    return this.chargingStationsRepository.findAll();
+    return this.dataService.chargingStations.findAll();
   }
 
   async findOne(id: number): Promise<ChargingStation> {
@@ -32,7 +28,7 @@ export class ChargingStationsService {
       where: { id },
     };
 
-    const chargingStation = await this.chargingStationsRepository.findOne(
+    const chargingStation = await this.dataService.chargingStations.findOne(
       options,
     );
 
@@ -49,7 +45,7 @@ export class ChargingStationsService {
     radius: number,
     company_id?: number,
   ): Promise<ChargingStation[]> {
-    return this.chargingStationsRepository.findNearbyChargingStations({
+    return this.dataService.chargingStations.findNearbyChargingStations({
       latitude,
       longitude,
       radius,
@@ -61,7 +57,7 @@ export class ChargingStationsService {
     createChargingStationDto: CreateChargingStationDto,
   ): Promise<ChargingStation> {
     const company = await this.findCompany(createChargingStationDto.company_id);
-    const chargingStation = await this.chargingStationsRepository.create(
+    const chargingStation = await this.dataService.chargingStations.create(
       createChargingStationDto,
     );
 
@@ -73,19 +69,13 @@ export class ChargingStationsService {
   }
 
   async update(id: number, updateChargingStationDto: UpdateChargingStationDto) {
-    if (Object.keys(updateChargingStationDto).length === 0) {
-      throw new UnprocessableEntityException(
-        'No fields to update were provided',
-      );
-    }
-
     await this.findCompany(updateChargingStationDto.company_id);
 
     const options: FindOneOptions<ChargingStation> = {
       where: { id },
     };
 
-    const chargingStation = await this.chargingStationsRepository.findOne(
+    const chargingStation = await this.dataService.chargingStations.findOne(
       options,
     );
 
@@ -93,10 +83,12 @@ export class ChargingStationsService {
       throw new BadRequestException(`Charging Station #${id} not found`);
     }
 
-    const updatedChargingStation = await this.chargingStationsRepository.save({
-      ...chargingStation,
-      ...updateChargingStationDto,
-    });
+    const updatedChargingStation = await this.dataService.chargingStations.save(
+      {
+        ...chargingStation,
+        ...updateChargingStationDto,
+      },
+    );
 
     return updatedChargingStation;
   }
@@ -107,7 +99,7 @@ export class ChargingStationsService {
       relations: ['company'],
     };
 
-    const chargingStation = await this.chargingStationsRepository.findOne(
+    const chargingStation = await this.dataService.chargingStations.findOne(
       options,
     );
 
@@ -117,7 +109,7 @@ export class ChargingStationsService {
 
     chargingStation.company = null;
 
-    await this.chargingStationsRepository.remove(chargingStation);
+    await this.dataService.chargingStations.remove(chargingStation);
 
     return chargingStation;
   }
@@ -128,7 +120,7 @@ export class ChargingStationsService {
       relations: ['charging_stations'],
     };
 
-    const company = await this.companiesRepository.findOne(options);
+    const company = await this.dataService.companies.findOne(options);
     if (!company) {
       throw new BadRequestException(`Company #${id} not found`);
     }
@@ -146,8 +138,8 @@ export class ChargingStationsService {
     await queryRunner.startTransaction();
 
     try {
-      await this.chargingStationsRepository.save(chargingStation);
-      await this.companiesRepository.save(company);
+      await this.dataService.chargingStations.save(chargingStation);
+      await this.dataService.companies.save(company);
 
       return chargingStation;
     } catch (error) {

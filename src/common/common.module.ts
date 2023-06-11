@@ -5,9 +5,10 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ApiKeyGuard } from './guards/api-key/api-key.guard';
 import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
 import { LoggingMiddleware } from './middleware/logging.middleware';
+import { DataServiceModule } from './repository/data-service.module';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, DataServiceModule],
   providers: [
     {
       provide: APP_GUARD,
