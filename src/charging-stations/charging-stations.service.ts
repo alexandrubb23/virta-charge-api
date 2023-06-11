@@ -2,16 +2,15 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
-
-import { DataService } from 'src/common/repository/data-service';
-import { Company } from 'src/companies/entities/company.entity';
 import { DataSource, FindOneOptions } from 'typeorm';
-import { CreateChargingStationDto } from './dto/create-charging-station.dto';
-import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
+
 import { ChargingStation } from './entities/charging-station.entity';
+import { Company } from 'src/companies/entities/company.entity';
+import { CreateChargingStationDto } from './dto/create-charging-station.dto';
+import { DataService } from 'src/common/repository/data-service';
 import { SaveChargingStationInterface } from './models/charging-station.interface';
+import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 
 @Injectable()
 export class ChargingStationsService {
