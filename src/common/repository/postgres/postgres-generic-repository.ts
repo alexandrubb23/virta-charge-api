@@ -36,7 +36,7 @@ export class PostgresGenericRepository<T> implements GenericRepository<T> {
     return this.repository.remove(entity);
   }
 
-  async findNearbyChargingStations({
+  findNearbyChargingStations({
     company_id,
     latitude,
     longitude,
@@ -70,8 +70,6 @@ export class PostgresGenericRepository<T> implements GenericRepository<T> {
       });
     }
 
-    const chargingStations = await queryBuilder.getRawMany();
-
-    return chargingStations;
+    return queryBuilder.getRawMany();
   }
 }
