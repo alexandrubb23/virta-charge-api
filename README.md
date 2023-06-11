@@ -150,7 +150,7 @@ For instance:
 
 ```bash
 curl -X 'GET' \
-  'http://localhost:3000/charging-stations/nearby?latitude=30.276660&longitude=-98.413280&radius=1000' \
+  'http://localhost:3000/charging-stations/search?latitude=30.276660&longitude=-98.413280&radius=1000' \
   -H 'accept: application/json'
 ```
 
