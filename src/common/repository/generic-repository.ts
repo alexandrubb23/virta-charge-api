@@ -1,11 +1,5 @@
 import { FindManyOptions, FindOneOptions } from 'typeorm';
-
-export type NearbyChargingStationsQuery = {
-  company_id?: number;
-  latitude: number;
-  longitude: number;
-  radius: number;
-};
+import { SearchCharginStationsQueryDto } from '../dto/search-charging-stations-query.dto';
 
 export abstract class GenericRepository<T> {
   abstract findAll(options?: FindManyOptions<T>): Promise<T[]>;
@@ -15,10 +9,7 @@ export abstract class GenericRepository<T> {
   abstract update(entity: T): Promise<T>;
   abstract preload(entity: Partial<T>): Promise<T>;
   abstract remove(entity: T): Promise<T>;
-  abstract findNearbyChargingStations({
-    company_id,
-    latitude,
-    longitude,
-    radius,
-  }: NearbyChargingStationsQuery): Promise<T[]>;
+  abstract findNearbyChargingStations(
+    searchChargingStationsQuery: SearchCharginStationsQueryDto,
+  ): Promise<T[]>;
 }

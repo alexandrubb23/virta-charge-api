@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 import {
   Column,
@@ -20,6 +21,7 @@ export class Company {
   @Column()
   parentId: number;
 
+  @ApiHideProperty()
   @JoinTable()
   @ManyToMany(
     () => ChargingStation,

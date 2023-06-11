@@ -9,13 +9,21 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiAuthAndPayload,
+  ApiAuthWithNotFound,
+} from 'src/common/decorators/api.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
+import { StripPropertyOnResponse } from 'src/common/decorators/strip-property.decorator';
+import { SearchCharginStationsQueryDto } from 'src/common/dto/search-charging-stations-query.dto';
+import { FieldsToUpdateValidatorPipe } from 'src/common/pipes/fields-to-update-validator.pipe';
 import { ChargingStationsService } from './charging-stations.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
-import { ChargingStation } from './entities/charging-station.entity';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
-import { Public } from 'src/common/decorators/public.decorator';
-import { FieldsToUpdateValidatorPipe } from 'src/common/pipes/fields-to-update-validator.pipe';
+import { ChargingStation } from './entities/charging-station.entity';
 
+@ApiTags('Charging Stations API')
 @Controller('charging-stations')
 export class ChargingStationsController {
   constructor(
@@ -28,28 +36,24 @@ export class ChargingStationsController {
     return this.chargingStationService.findAll();
   }
 
-  // @Public()
-  // @Get(':id')
-  // findOne(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
-  //   return this.chargingStationService.findOne(id);
-  // }
-
+  @ApiQuery({ name: 'company_id', required: false })
   @Public()
   @Get('nearby')
   findNearbyChargingStations(
-    @Query('latitude') latitude: number,
-    @Query('longitude') longitude: number,
-    @Query('radius') radius: number,
-    @Query('company_id') company_id?: number,
+    @Query() searchChargingStationsQuery: SearchCharginStationsQueryDto,
   ): Promise<ChargingStation[]> {
-    return this.chargingStationService.findNearbyChargingStations(
-      latitude,
-      longitude,
-      radius,
-      company_id,
-    );
+    return this.chargingStationService.findNearbyChargingStations({
+      ...searchChargingStationsQuery,
+    });
   }
 
+  @Public()
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
+    return this.chargingStationService.findOne(id);
+  }
+
+  @ApiAuthAndPayload()
   @Post()
   create(
     @Body() createChargingStationDto: CreateChargingStationDto,
@@ -57,6 +61,7 @@ export class ChargingStationsController {
     return this.chargingStationService.create(createChargingStationDto);
   }
 
+  @ApiAuthAndPayload()
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -66,7 +71,9 @@ export class ChargingStationsController {
     return this.chargingStationService.update(id, updateChargingStationDto);
   }
 
+  @ApiAuthWithNotFound()
   @Delete(':id')
+  @StripPropertyOnResponse('company')
   remove(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
     return this.chargingStationService.remove(id);
   }

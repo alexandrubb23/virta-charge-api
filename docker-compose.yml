@@ -1,16 +1,33 @@
 version: '3'
 
 services:
-  db:
-    image: postgres:latest
-    restart: always
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_PASSWORD: pass123
-    volumes:
-      - ./init-scripts:/docker-entrypoint-initdb.d
-    command: postgres -c 'shared_preload_libraries=pg_stat_statements'
+  api:
     build:
       context: .
       dockerfile: Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${DATABASE_DB}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - 5432:5432
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
+volumes:
+  docker-nest-postgres:

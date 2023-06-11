@@ -1,8 +1,6 @@
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import {
-  GenericRepository,
-  NearbyChargingStationsQuery,
-} from '../generic-repository';
+import { GenericRepository } from '../generic-repository';
+import { SearchCharginStationsQueryDto } from 'src/common/dto/search-charging-stations-query.dto';
 
 export class PostgresGenericRepository<T> implements GenericRepository<T> {
   constructor(private readonly repository: Repository<T>) {}
@@ -41,7 +39,7 @@ export class PostgresGenericRepository<T> implements GenericRepository<T> {
     latitude,
     longitude,
     radius,
-  }: NearbyChargingStationsQuery): Promise<T[]> {
+  }: SearchCharginStationsQueryDto): Promise<T[]> {
     const queryBuilder = this.repository
       .createQueryBuilder('charging_stations')
       .select('charging_stations.*')
