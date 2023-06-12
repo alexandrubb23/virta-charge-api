@@ -1,18 +1,226 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DataSource } from 'typeorm';
+
+import { DataService } from 'src/common/repository/data-service';
 import { ChargingStationsService } from './charging-stations.service';
+import { ChargingStation } from './entities/charging-station.entity';
+import {
+  spyOnChargingStationsService,
+  createMockRepository,
+  spyOnCompaniesService,
+} from 'test/utils/mock.repositoy';
+import {
+  expectBadRequestException,
+  expectNotFoundException,
+} from 'test/utils/expect.exception';
 
 describe('ChargingStationsService', () => {
   let service: ChargingStationsService;
+  let dataService: DataService;
+
+  const charginStationsId = 1;
+  const expectedChargingStation: ChargingStation = {
+    id: 1,
+    name: 'Charging Station 1',
+    address: 'Address 1',
+    latitude: 1,
+    longitude: 1,
+    company_id: 1,
+  } as ChargingStation;
+
+  const expectedCompany = {
+    id: 1,
+    name: 'Company 1',
+    parentId: 0,
+    charging_stations: [],
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ChargingStationsService],
+      providers: [
+        ChargingStationsService,
+        {
+          provide: DataService,
+          useValue: createMockRepository(),
+        },
+        {
+          provide: DataSource,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<ChargingStationsService>(ChargingStationsService);
+    dataService = module.get<DataService>(DataService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  let spyOnCompanies;
+  let spyOnChargingStations;
+  beforeEach(() => {
+    spyOnCompanies = spyOnCompaniesService(dataService);
+    spyOnChargingStations = spyOnChargingStationsService(dataService);
+  });
+
+  describe('findAll /', () => {
+    it('should return an array of charging stations', async () => {
+      const expectedChargingStations: ChargingStation[] = [
+        expectedChargingStation,
+      ];
+
+      spyOnChargingStations({
+        methodName: 'findAll',
+        value: expectedChargingStations,
+      });
+
+      const chargingStation = await service.findAll();
+      expect(chargingStation).toEqual(expectedChargingStations);
+    });
+  });
+
+  describe('findOne /', () => {
+    describe('when charging station with ID exists', () => {
+      it('should return the charging station object', async () => {
+        spyOnChargingStations({
+          methodName: 'findOne',
+          value: expectedChargingStation,
+        });
+
+        const chargingStation = await service.findOne(charginStationsId);
+        expect(chargingStation).toEqual(expectedChargingStation);
+      });
+    });
+
+    describe('otherwise', () => {
+      it('should throw the "NotFoundException"', async () => {
+        spyOnChargingStations({
+          methodName: 'findOne',
+          value: undefined,
+        });
+
+        await expectNotFoundException(
+          () => service.findOne(charginStationsId),
+          charginStationsId,
+        );
+      });
+    });
+  });
+
+  describe('findNearbyChargingStations /', () => {
+    it('should return an array of charging stations', async () => {
+      const expectedChargingStations: ChargingStation[] = [
+        expectedChargingStation,
+      ];
+
+      spyOnChargingStations({
+        methodName: 'findNearbyChargingStations',
+        value: expectedChargingStations,
+      });
+
+      const chargingStation = await service.findNearbyChargingStations({
+        latitude: 1,
+        longitude: 1,
+        radius: 1,
+        company_id: 0,
+      });
+
+      expect(chargingStation).toEqual(expectedChargingStations);
+    });
+  });
+
+  describe('create /', () => {
+    it.todo('should return the created charging station object');
+  });
+
+  describe('update /', () => {
+    describe('when charging station with ID exists', () => {
+      it('should return the updated charging station object', async () => {
+        spyOnCompanies({
+          methodName: 'findOne',
+          value: expectedCompany,
+        });
+
+        spyOnCompanies({
+          methodName: 'save',
+          value: expectedCompany,
+        });
+
+        spyOnCompanies({
+          methodName: 'preload',
+          value: expectedCompany,
+        });
+
+        spyOnChargingStations({
+          methodName: 'findOne',
+          value: expectedChargingStation,
+        });
+
+        spyOnChargingStations({
+          methodName: 'save',
+          value: expectedChargingStation,
+        });
+
+        spyOnChargingStations({
+          methodName: 'update',
+          value: expectedChargingStation,
+        });
+
+        const chargingStation = await service.update(
+          charginStationsId,
+          expectedChargingStation,
+        );
+
+        expect(chargingStation).toEqual(expectedChargingStation);
+      });
+    });
+
+    describe('otherwise', () => {
+      it('should throw the "NotFoundException"', async () => {
+        spyOnChargingStations({
+          methodName: 'findOne',
+          value: undefined,
+        });
+
+        await expectBadRequestException(
+          () => service.update(charginStationsId, expectedChargingStation),
+          charginStationsId,
+          `Company #${charginStationsId} not found`,
+        );
+      });
+    });
+  });
+
+  describe('remove /', () => {
+    describe('when charging station with ID exists', () => {
+      it('should return the removed charging station object', async () => {
+        spyOnChargingStations({
+          methodName: 'findOne',
+          value: expectedChargingStation,
+        });
+
+        spyOnChargingStations({
+          methodName: 'remove',
+          value: expectedChargingStation,
+        });
+
+        const chargingStation = await service.remove(charginStationsId);
+
+        expect(chargingStation).toEqual(expectedChargingStation);
+      });
+    });
+
+    describe('otherwise', () => {
+      it('should throw the "NotFoundException"', async () => {
+        spyOnChargingStations({
+          methodName: 'findOne',
+          value: undefined,
+        });
+
+        await expectBadRequestException(
+          () => service.remove(charginStationsId),
+          charginStationsId,
+        );
+      });
+    });
   });
 });
