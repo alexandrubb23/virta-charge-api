@@ -164,6 +164,8 @@ The response will contain a list of charging stations within the specified radiu
 
 ```bash
 npm run test -- companies.service
+npm run test -- charging-stations.service
+npm run test -- companiesWithChargingStations
 
 ```
 
