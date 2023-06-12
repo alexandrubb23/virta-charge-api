@@ -13,6 +13,7 @@ For example, consider three companies: A, B, and C. Company A owns 10 charging s
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
+- [Running the Project on your local](#running-the-project-on-your-local)
 - [Running the Project with Docker](#running-the-project-with-docker)
 - [API Documentation](#api-documentation)
 - [Searching for Charging Stations](#searching-for-charging-stations)
@@ -45,7 +46,6 @@ Before running the project, ensure you have the following dependencies installed
 # Database
 DATABASE_USER="postgres"
 DATABASE_PASSWORD="secret"
-DATABASE_NAME="postgres"
 DATABASE_PORT="5432"
 DATABASE_HOST="postgres" # container service name
 DATABASE_DB="postgres"
@@ -78,14 +78,18 @@ curl -X 'PATCH' \
 }'
 ```
 
-5. Install the dependencies by running the following command:
+## Running the Project on your local
+
+1. Before running the project, ensure that `Node.js` and `npm` (Node Package Manager) are installed on your local machine.
+2. Open a terminal or command prompt and navigate to the root directory of your project.
+3. Install the project dependencies by running the following command:
 
 ```bash
 npm install
 
 ```
 
-6. Build and run the database:
+2. Build and run the database:
 
 ```bash
 docker compose up postgres --build
@@ -93,7 +97,7 @@ docker compose up postgres --build
 
 _Note: If you decide to run only the PostgreSQL database service without the API, make sure to set the `DATABASE_HOST` environment variable to localhost._
 
-7. Run the API
+3. Run the API
 
 ```
 npm run start:dev
@@ -101,7 +105,7 @@ npm run start:dev
 
 This command will run the API in development mode with hot reloading enabled.
 
-8. Start consuming the API by making requests at:
+4. Start consuming the API by making requests at:
 
 ```bash
 http://localhost:3000
@@ -156,17 +160,20 @@ curl -X 'GET' \
 
 The response will contain a list of charging stations within the specified radius, ordered by increasing distance. Stations in the same location will be grouped together.
 
-## Running Tests
+## Available Tests (lack of time)
 
 ```bash
-npm run test
+npm run test -- companies.service
 
 ```
+
+_I know that testing is a critical part of software development to ensure the reliability and correctness of the code. It's generally recommended to include a comprehensive set of tests to cover different aspects of our application and provide confidence in its functionality._
 
 # TODO
 
 - Implement unique companies
 - Implemnent unique charging stations
+- Add more coverege tests
 
 ## Contributing
 
