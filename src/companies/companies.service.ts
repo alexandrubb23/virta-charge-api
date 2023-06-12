@@ -43,13 +43,11 @@ export class CompaniesService {
     return company;
   }
 
-  async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
-    const company = this.dataService.companies.save({
+  create(createCompanyDto: CreateCompanyDto): Promise<Company> {
+    return this.dataService.companies.save({
       ...createCompanyDto,
       charging_stations: [],
     });
-
-    return company;
   }
 
   async update(
