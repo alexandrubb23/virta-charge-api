@@ -1,7 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { DataService } from 'src/common/repository/data-service';
+import { expectNotFoundException } from 'test/utils/expect.exception';
 import {
   createMockRepository,
   spyOnChargingStationsService,
@@ -10,7 +10,6 @@ import {
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { expectNotFoundException } from 'test/utils/expect.exception';
 
 describe('CompaniesService', () => {
   let service: CompaniesService;

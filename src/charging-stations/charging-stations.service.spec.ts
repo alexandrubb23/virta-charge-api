@@ -1,19 +1,18 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 
 import { DataService } from 'src/common/repository/data-service';
-import { ChargingStationsService } from './charging-stations.service';
-import { ChargingStation } from './entities/charging-station.entity';
-import {
-  spyOnChargingStationsService,
-  createMockRepository,
-  spyOnCompaniesService,
-} from 'test/utils/mock.repositoy';
 import {
   expectBadRequestException,
   expectNotFoundException,
 } from 'test/utils/expect.exception';
+import {
+  createMockRepository,
+  spyOnChargingStationsService,
+  spyOnCompaniesService,
+} from 'test/utils/mock.repositoy';
+import { ChargingStationsService } from './charging-stations.service';
+import { ChargingStation } from './entities/charging-station.entity';
 
 describe('ChargingStationsService', () => {
   let service: ChargingStationsService;
