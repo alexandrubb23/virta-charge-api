@@ -11,6 +11,7 @@ import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { DataService } from 'src/common/repository/data-service';
 import { SaveChargingStationInterface } from './models/charging-station.interface';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
+import { COMPANIES_CHARGING_STATIONS_TABLE } from 'src/constants/db-tables.constants';
 
 @Injectable()
 export class ChargingStationsService {
@@ -95,7 +96,7 @@ export class ChargingStationsService {
     // TODO: There must be a better way to do this
     await this.dataSource
       .createQueryBuilder()
-      .update('companies_charging_stations_charging_station')
+      .update(COMPANIES_CHARGING_STATIONS_TABLE)
       .set({ companiesId: company_id })
       .where('chargingStationId = :chargingStationId', {
         chargingStationId: chargingStation.id,

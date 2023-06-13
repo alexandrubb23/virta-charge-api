@@ -9,6 +9,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { COMPANIES_CHARGING_STATIONS_TABLE } from 'src/constants/db-tables.constants';
+
 @Entity('companies')
 export class Company {
   @PrimaryGeneratedColumn()
@@ -22,7 +24,9 @@ export class Company {
   parentId: number;
 
   @ApiHideProperty()
-  @JoinTable()
+  @JoinTable({
+    name: COMPANIES_CHARGING_STATIONS_TABLE,
+  })
   @ManyToMany(
     () => ChargingStation,
     (chargingStation) => chargingStation.company,
