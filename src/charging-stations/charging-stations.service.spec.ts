@@ -45,7 +45,13 @@ describe('ChargingStationsService', () => {
         },
         {
           provide: DataSource,
-          useValue: {},
+          useValue: {
+            createQueryBuilder: jest.fn().mockReturnThis(),
+            update: jest.fn().mockReturnThis(),
+            set: jest.fn().mockReturnThis(),
+            where: jest.fn().mockReturnThis(),
+            execute: jest.fn().mockReturnThis(),
+          },
         },
       ],
     }).compile();

@@ -69,7 +69,9 @@ export class ChargingStationsService {
   }
 
   async update(id: number, updateChargingStationDto: UpdateChargingStationDto) {
-    await this.findCompany(updateChargingStationDto.company_id);
+    const { company_id } = updateChargingStationDto;
+
+    await this.findCompany(company_id);
 
     const options: FindOneOptions<ChargingStation> = {
       where: { id },
@@ -89,6 +91,16 @@ export class ChargingStationsService {
         ...updateChargingStationDto,
       },
     );
+
+    // TODO: There must be a better way to do this
+    await this.dataSource
+      .createQueryBuilder()
+      .update('companies_charging_stations_charging_station')
+      .set({ companiesId: company_id })
+      .where('chargingStationId = :chargingStationId', {
+        chargingStationId: chargingStation.id,
+      })
+      .execute();
 
     return updatedChargingStation;
   }
