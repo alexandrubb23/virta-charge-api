@@ -57,16 +57,11 @@ export class ChargingStationsService {
   async create(
     createChargingStationDto: CreateChargingStationDto,
   ): Promise<ChargingStation> {
-    const company = await this.findCompany(createChargingStationDto.company_id);
     const chargingStation = await this.dataService.chargingStations.create(
       createChargingStationDto,
     );
 
-    company.charging_stations.push(chargingStation);
-
-    await this.saveChargingStationAndCompany({ chargingStation, company });
-
-    return chargingStation;
+    return this.dataService.chargingStations.save(chargingStation);
   }
 
   async update(id: number, updateChargingStationDto: UpdateChargingStationDto) {
@@ -94,14 +89,14 @@ export class ChargingStationsService {
     );
 
     // TODO: There must be a better way to do this
-    await this.dataSource
-      .createQueryBuilder()
-      .update(COMPANIES_CHARGING_STATIONS_TABLE)
-      .set({ companiesId: company_id })
-      .where('chargingStationId = :chargingStationId', {
-        chargingStationId: chargingStation.id,
-      })
-      .execute();
+    // await this.dataSource
+    //   .createQueryBuilder()
+    //   .update(COMPANIES_CHARGING_STATIONS_TABLE)
+    //   .set({ companiesId: company_id })
+    //   .where('chargingStationId = :chargingStationId', {
+    //     chargingStationId: chargingStation.id,
+    //   })
+    //   .execute();
 
     return updatedChargingStation;
   }
@@ -120,8 +115,6 @@ export class ChargingStationsService {
       throw new BadRequestException(`Charging Station #${id} not found`);
     }
 
-    chargingStation.company = null;
-
     await this.dataService.chargingStations.remove(chargingStation);
 
     return chargingStation;
@@ -139,27 +132,5 @@ export class ChargingStationsService {
     }
 
     return company;
-  }
-
-  private async saveChargingStationAndCompany({
-    chargingStation,
-    company,
-  }: SaveChargingStationInterface): Promise<ChargingStation> {
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await this.dataService.chargingStations.save(chargingStation);
-      await this.dataService.companies.save(company);
-
-      return chargingStation;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
   }
 }
