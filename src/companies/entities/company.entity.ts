@@ -4,9 +4,12 @@ import {
   Column,
   Entity,
   Index,
+  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { COMPANIES_CHARGING_STATIONS_TABLE } from 'src/constants/db-tables.constants';
 
 @Entity('companies')
 export class Company {
@@ -21,9 +24,15 @@ export class Company {
   parentId: number;
 
   @ApiHideProperty()
+  @JoinTable({
+    name: COMPANIES_CHARGING_STATIONS_TABLE,
+  })
   @ManyToMany(
     () => ChargingStation,
     (chargingStation) => chargingStation.company,
+    {
+      cascade: true,
+    },
   )
   charging_stations: ChargingStation[];
 }

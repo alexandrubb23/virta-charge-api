@@ -1,11 +1,9 @@
 import { ApiHideProperty } from '@nestjs/swagger';
 import { Company } from 'src/companies/entities/company.entity';
-import { COMPANIES_CHARGING_STATIONS_TABLE } from 'src/constants/db-tables.constants';
 import {
   Column,
   Entity,
   Index,
-  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -40,11 +38,6 @@ export class ChargingStation {
   address: string;
 
   @ApiHideProperty()
-  @JoinTable({
-    name: COMPANIES_CHARGING_STATIONS_TABLE,
-  })
-  @ManyToMany(() => Company, (company) => company.charging_stations, {
-    cascade: true,
-  })
-  company: Company[];
+  @ManyToMany(() => Company, (company) => company.charging_stations)
+  company: Company;
 }
