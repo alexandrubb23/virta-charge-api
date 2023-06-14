@@ -21,6 +21,9 @@ export class CompaniesService {
       },
       skip: offset,
       take: limit,
+      order: {
+        id: 'ASC',
+      },
     };
 
     return this.dataService.companies.findAll(options);
