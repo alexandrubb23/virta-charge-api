@@ -10,17 +10,16 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
 import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+  ApiAuthAndPayload,
+  ApiAuthWithNotFound,
+  PaginateQuery,
+} from 'src/common/decorators/api.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { FieldsToUpdateValidatorPipe } from 'src/common/pipes/fields-to-update-validator.pipe';
+import { NOT_FOUND } from 'src/constants/http-response.constants';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -29,16 +28,6 @@ import {
   CompaniesChargingStationsInterceptor,
   CompanyChargingStationsInterceptor,
 } from './interceptors';
-import {
-  BAD_REQUEST,
-  FORBIDDEN,
-  NOT_FOUND,
-} from 'src/constants/http-response.constants';
-import {
-  ApiAuthAndPayload,
-  ApiAuthWithNotFound,
-  PaginateQuery,
-} from 'src/common/decorators/api.decorator';
 
 @ApiTags('Companies API')
 @Controller('companies')

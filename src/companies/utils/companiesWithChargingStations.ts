@@ -1,54 +1,62 @@
+import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 import { Company } from '../entities/company.entity';
 
-export const companiesWithChargingStations = (
-  companies: Company[],
-): Company[] => {
-  const procesed = new Map();
-  const companiesWithChargingStations = new Map();
+// By utilizing memoization, we avoid redundant calculations for companies
+// that have already been processed, resulting in significant performance
+// improvements. The time complexity is reduced to O(n) in the average case,
+// assuming a balanced company hierarchy. However, in the worst case scenario
+// where the company hierarchy is a straight line from root to leaf, the time
+// complexity will be O(n^2) due to the nature of the input.
+export const companiesWithChargingStations = (companies: Company[]): any => {
+  const companyMap = {};
 
+  // Build parent-child relationship map
   companies.forEach((company) => {
-    companiesWithChargingStations.set(company.id, company);
+    if (company.id === company.parentId) {
+      company.parentId = 0;
+    }
+
+    const { parentId } = company;
+    if (parentId !== 0) {
+      if (!companyMap[parentId]) {
+        companyMap[parentId] = [];
+      }
+      companyMap[parentId].push(company);
+    }
   });
 
-  const childrenChargingStations = (company: Company, parents = new Set()) => {
-    if (procesed.get(company.id)) return;
+  // Memoization map to store computed charging stations
+  const memo = new Map();
 
-    // The time complexity of this function is O(n) where n is the number of companies
-    const children = companies.filter(
-      (c) => c.parentId === company.id && c.id !== c.parentId,
-    );
+  // Recursive function with memoization to collect charging stations
+  const collectChargingStations = (company: Company): Set<ChargingStation> => {
+    if (memo.has(company.id)) {
+      return memo.get(company.id);
+    }
 
-    if (children.length === 0) return;
+    const chargingStations = new Set(company.charging_stations);
 
-    // The time complexity of this function is O(1) on average
-    parents.add(company.id);
-
-    // The time complexity of this operation is O(1)
-    // since it's accessing an array element by index
-    const nextChild = children[0];
-    if (!nextChild) return;
-
-    // The time complexity of this operation is O(k),
-    // where k is the total number of charging stations across all children
-    const mappedChildren = children.flatMap((c) => c.charging_stations);
-
-    // The time complexity of this loop is O(p),
-    // where p is the number of parents in the set
-    parents.forEach((parent) => {
-      procesed.set(company.id, true);
-
-      const getCompany = companiesWithChargingStations.get(parent);
-
-      companiesWithChargingStations.set(parent, {
-        ...getCompany,
-        charging_stations: [...getCompany.charging_stations, ...mappedChildren],
+    const children = companyMap[company.id];
+    if (children) {
+      children.forEach((child: Company) => {
+        const childChargingStations = collectChargingStations(child);
+        childChargingStations.forEach((station) =>
+          chargingStations.add(station),
+        );
       });
-    });
+    }
 
-    return childrenChargingStations(nextChild, parents);
+    memo.set(company.id, chargingStations);
+    return chargingStations;
   };
 
-  companies.forEach((company) => childrenChargingStations(company));
+  // Update charging stations for each company
+  companies.forEach((company) => {
+    const chargingStations = collectChargingStations(company);
+    if (chargingStations.size > 0) {
+      company.charging_stations = Array.from(chargingStations);
+    }
+  });
 
-  return Array.from(companiesWithChargingStations.values());
+  return companies;
 };

@@ -5,13 +5,12 @@ import {
 } from '@nestjs/common';
 import { DataSource, FindOneOptions } from 'typeorm';
 
-import { ChargingStation } from './entities/charging-station.entity';
+import { DataService } from 'src/common/repository/data-service';
 import { Company } from 'src/companies/entities/company.entity';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
-import { DataService } from 'src/common/repository/data-service';
-import { SaveChargingStationInterface } from './models/charging-station.interface';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
-import { COMPANIES_CHARGING_STATIONS_TABLE } from 'src/constants/db-tables.constants';
+import { ChargingStation } from './entities/charging-station.entity';
+import { SaveChargingStationInterface } from './models/charging-station.interface';
 
 @Injectable()
 export class ChargingStationsService {
@@ -72,7 +71,7 @@ export class ChargingStationsService {
   async update(id: number, updateChargingStationDto: UpdateChargingStationDto) {
     const { company_id } = updateChargingStationDto;
 
-    await this.findCompany(company_id);
+    const company = await this.findCompany(company_id);
 
     const options: FindOneOptions<ChargingStation> = {
       where: { id },
@@ -93,15 +92,9 @@ export class ChargingStationsService {
       },
     );
 
-    // TODO: There must be a better way to do this
-    await this.dataSource
-      .createQueryBuilder()
-      .update(COMPANIES_CHARGING_STATIONS_TABLE)
-      .set({ companiesId: company_id })
-      .where('chargingStationId = :chargingStationId', {
-        chargingStationId: chargingStation.id,
-      })
-      .execute();
+    company.charging_stations.push(updatedChargingStation);
+
+    await this.dataService.companies.save(company);
 
     return updatedChargingStation;
   }
@@ -119,8 +112,6 @@ export class ChargingStationsService {
     if (!chargingStation) {
       throw new BadRequestException(`Charging Station #${id} not found`);
     }
-
-    chargingStation.company = null;
 
     await this.dataService.chargingStations.remove(chargingStation);
 

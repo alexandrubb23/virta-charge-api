@@ -4,7 +4,8 @@ import {
   Column,
   Entity,
   Index,
-  ManyToMany,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -38,6 +39,7 @@ export class ChargingStation {
   address: string;
 
   @ApiHideProperty()
-  @ManyToMany(() => Company, (company) => company.charging_stations)
+  @ManyToOne(() => Company, (company) => company.charging_stations)
+  @JoinColumn({ name: 'company_id' })
   company: Company;
 }

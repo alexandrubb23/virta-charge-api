@@ -18,6 +18,7 @@ import { ChargingStation } from 'src/charging-stations/entities/charging-station
         database: process.env.DATABASE_DB,
         autoLoadEntities: !isProduction,
         synchronize: !isProduction,
+        logging: !isProduction,
       }),
     }),
     TypeOrmModule.forFeature([Company, ChargingStation]),
