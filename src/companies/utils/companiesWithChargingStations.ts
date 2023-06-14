@@ -33,22 +33,22 @@ export const companiesWithChargingStations = (companies: Company[]): any => {
     company: Company,
     visited = new Set<number>(),
   ): Set<ChargingStation> => {
-    const companiId = company.id;
+    const companyId = company.id;
 
-    if (visited.has(companiId)) {
+    if (visited.has(companyId)) {
       // Company has already been visited, return empty set to break the cycle
       return new Set();
     }
 
-    visited.add(companiId);
+    visited.add(companyId);
 
-    if (memo.has(companiId)) {
-      return memo.get(companiId);
+    if (memo.has(companyId)) {
+      return memo.get(companyId);
     }
 
     const chargingStations = new Set(company.charging_stations);
 
-    const children = companyMap[companiId];
+    const children = companyMap[companyId];
     if (children) {
       children.forEach((child: Company) => {
         const childChargingStations = collectChargingStations(child, visited);
@@ -58,7 +58,7 @@ export const companiesWithChargingStations = (companies: Company[]): any => {
       });
     }
 
-    memo.set(companiId, chargingStations);
+    memo.set(companyId, chargingStations);
     return chargingStations;
   };
 
