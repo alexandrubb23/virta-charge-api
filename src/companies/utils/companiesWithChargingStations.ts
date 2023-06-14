@@ -7,7 +7,9 @@ import { Company } from '../entities/company.entity';
 // assuming a balanced company hierarchy. However, in the worst case scenario
 // where the company hierarchy is a straight line from root to leaf, the time
 // complexity will be O(n^2) due to the nature of the input.
-export const companiesWithChargingStations = (companies: Company[]): any => {
+export const companiesWithChargingStations = (
+  companies: Company[],
+): Company[] => {
   const companyMap = {};
 
   // Build parent-child relationship map
