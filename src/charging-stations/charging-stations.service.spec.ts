@@ -2,10 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 
 import { DataService } from 'src/common/repository/data-service';
-import {
-  expectBadRequestException,
-  expectNotFoundException,
-} from 'test/utils/expect.exception';
+import { CompaniesService } from 'src/companies/companies.service';
+import { expectNotFoundException } from 'test/utils/expect.exception';
 import {
   createMockRepository,
   spyOnChargingStationsService,
@@ -51,6 +49,12 @@ describe('ChargingStationsService', () => {
             set: jest.fn().mockReturnThis(),
             where: jest.fn().mockReturnThis(),
             execute: jest.fn().mockReturnThis(),
+          },
+        },
+        {
+          provide: CompaniesService,
+          useValue: {
+            findOne: jest.fn().mockResolvedValue(expectedCompany),
           },
         },
       ],
@@ -140,34 +144,13 @@ describe('ChargingStationsService', () => {
   describe('update /', () => {
     describe('when charging station with ID exists', () => {
       it('should return the updated charging station object', async () => {
-        spyOnCompanies({
-          methodName: 'findOne',
-          value: expectedCompany,
-        });
+        const chargingStationsMethods = ['findOne', 'save', 'update'];
 
-        spyOnCompanies({
-          methodName: 'save',
-          value: expectedCompany,
-        });
-
-        spyOnCompanies({
-          methodName: 'preload',
-          value: expectedCompany,
-        });
-
-        spyOnChargingStations({
-          methodName: 'findOne',
-          value: expectedChargingStation,
-        });
-
-        spyOnChargingStations({
-          methodName: 'save',
-          value: expectedChargingStation,
-        });
-
-        spyOnChargingStations({
-          methodName: 'update',
-          value: expectedChargingStation,
+        chargingStationsMethods.forEach((methodName) => {
+          spyOnChargingStations({
+            methodName,
+            value: expectedChargingStation,
+          });
         });
 
         const chargingStation = await service.update(
@@ -186,10 +169,9 @@ describe('ChargingStationsService', () => {
           value: undefined,
         });
 
-        await expectBadRequestException(
+        await expectNotFoundException(
           () => service.update(charginStationsId, expectedChargingStation),
           charginStationsId,
-          `Company #${charginStationsId} not found`,
         );
       });
     });

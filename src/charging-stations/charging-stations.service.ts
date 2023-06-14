@@ -1,12 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, FindOneOptions } from 'typeorm';
 
 import { DataService } from 'src/common/repository/data-service';
-import { Company } from 'src/companies/entities/company.entity';
+import { CompaniesService } from 'src/companies/companies.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ChargingStation } from './entities/charging-station.entity';
@@ -17,6 +13,7 @@ export class ChargingStationsService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly dataService: DataService,
+    private readonly companyService: CompaniesService,
   ) {}
 
   findAll(): Promise<ChargingStation[]> {
@@ -59,7 +56,9 @@ export class ChargingStationsService {
   async create(
     createChargingStationDto: CreateChargingStationDto,
   ): Promise<ChargingStation> {
-    const company = await this.findCompany(createChargingStationDto.company_id);
+    const company = await this.companyService.findOne(
+      createChargingStationDto.company_id,
+    );
     const chargingStation = await this.dataService.chargingStations.create(
       createChargingStationDto,
     );
@@ -74,7 +73,7 @@ export class ChargingStationsService {
   async update(id: number, updateChargingStationDto: UpdateChargingStationDto) {
     const { company_id } = updateChargingStationDto;
 
-    const company = await this.findCompany(company_id);
+    const company = await this.companyService.findOne(company_id);
     const chargingStation = await this.findOne(id);
 
     const updatedChargingStation = await this.dataService.chargingStations.save(
@@ -97,20 +96,6 @@ export class ChargingStationsService {
     await this.dataService.chargingStations.remove(chargingStation);
 
     return chargingStation;
-  }
-
-  private async findCompany(id: number): Promise<Company> {
-    const options: FindOneOptions<Company> = {
-      where: { id },
-      relations: ['charging_stations'],
-    };
-
-    const company = await this.dataService.companies.findOne(options);
-    if (!company) {
-      throw new BadRequestException(`Company #${id} not found`);
-    }
-
-    return company;
   }
 
   private async saveChargingStationAndCompany({
