@@ -26,6 +26,9 @@ export class ChargingStationsService {
   async findOne(id: number): Promise<ChargingStation> {
     const options: FindOneOptions<ChargingStation> = {
       where: { id },
+      relations: {
+        company: true,
+      },
     };
 
     const chargingStation = await this.dataService.chargingStations.findOne(
@@ -72,18 +75,7 @@ export class ChargingStationsService {
     const { company_id } = updateChargingStationDto;
 
     const company = await this.findCompany(company_id);
-
-    const options: FindOneOptions<ChargingStation> = {
-      where: { id },
-    };
-
-    const chargingStation = await this.dataService.chargingStations.findOne(
-      options,
-    );
-
-    if (!chargingStation) {
-      throw new BadRequestException(`Charging Station #${id} not found`);
-    }
+    const chargingStation = await this.findOne(id);
 
     const updatedChargingStation = await this.dataService.chargingStations.save(
       {
@@ -100,18 +92,7 @@ export class ChargingStationsService {
   }
 
   async remove(id: number): Promise<ChargingStation> {
-    const options: FindOneOptions<ChargingStation> = {
-      where: { id },
-      relations: ['company'],
-    };
-
-    const chargingStation = await this.dataService.chargingStations.findOne(
-      options,
-    );
-
-    if (!chargingStation) {
-      throw new BadRequestException(`Charging Station #${id} not found`);
-    }
+    const chargingStation = await this.findOne(id);
 
     await this.dataService.chargingStations.remove(chargingStation);
 

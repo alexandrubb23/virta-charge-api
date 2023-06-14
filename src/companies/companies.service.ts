@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { DataService } from 'src/common/repository/data-service';
 import { FindManyOptions } from 'typeorm';

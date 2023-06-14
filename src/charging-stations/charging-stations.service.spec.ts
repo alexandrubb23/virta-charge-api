@@ -221,7 +221,7 @@ describe('ChargingStationsService', () => {
           value: undefined,
         });
 
-        await expectBadRequestException(
+        await expectNotFoundException(
           () => service.remove(charginStationsId),
           charginStationsId,
         );

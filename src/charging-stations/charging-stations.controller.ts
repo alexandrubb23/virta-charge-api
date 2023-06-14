@@ -49,6 +49,7 @@ export class ChargingStationsController {
 
   @Public()
   @Get(':id')
+  @StripPropertyOnResponse('company')
   findOne(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
     return this.chargingStationService.findOne(id);
   }
@@ -63,6 +64,7 @@ export class ChargingStationsController {
 
   @ApiAuthAndPayload()
   @Patch(':id')
+  @StripPropertyOnResponse('company')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(FieldsToUpdateValidatorPipe)
