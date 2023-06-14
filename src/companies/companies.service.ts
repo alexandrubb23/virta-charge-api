@@ -72,20 +72,8 @@ export class CompaniesService {
   async remove(id: number) {
     const company = await this.findOne(id);
 
-    // TODO: Should we use transaction here?
     const removeCompany = await this.dataService.companies.remove(company);
-    await this.removeMultipleChargingStations(company.charging_stations);
 
     return removeCompany;
-  }
-
-  private async removeMultipleChargingStations(
-    chargingStations: ChargingStation[],
-  ) {
-    // TODO: There must be a better way to do this.
-    // Cascade delete maybe?
-    for (const chargingStation of chargingStations) {
-      await this.dataService.chargingStations.remove(chargingStation);
-    }
   }
 }

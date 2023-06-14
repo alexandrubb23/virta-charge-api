@@ -39,7 +39,9 @@ export class ChargingStation {
   address: string;
 
   @ApiHideProperty()
-  @ManyToOne(() => Company, (company) => company.charging_stations)
+  @ManyToOne(() => Company, (company) => company.charging_stations, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 }
