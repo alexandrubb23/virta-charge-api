@@ -31,22 +31,24 @@ export const companiesWithChargingStations = (companies: Company[]): any => {
   // Recursive function with memoization to collect charging stations
   const collectChargingStations = (
     company: Company,
-    visited: Set<number>,
+    visited = new Set<number>(),
   ): Set<ChargingStation> => {
-    if (visited.has(company.id)) {
+    const companiId = company.id;
+
+    if (visited.has(companiId)) {
       // Company has already been visited, return empty set to break the cycle
       return new Set();
     }
 
-    visited.add(company.id);
+    visited.add(companiId);
 
-    if (memo.has(company.id)) {
-      return memo.get(company.id);
+    if (memo.has(companiId)) {
+      return memo.get(companiId);
     }
 
     const chargingStations = new Set(company.charging_stations);
 
-    const children = companyMap[company.id];
+    const children = companyMap[companiId];
     if (children) {
       children.forEach((child: Company) => {
         const childChargingStations = collectChargingStations(child, visited);
@@ -56,14 +58,13 @@ export const companiesWithChargingStations = (companies: Company[]): any => {
       });
     }
 
-    memo.set(company.id, chargingStations);
+    memo.set(companiId, chargingStations);
     return chargingStations;
   };
 
   // Update charging stations for each company
   companies.forEach((company) => {
-    const visited = new Set<number>();
-    const chargingStations = collectChargingStations(company, visited);
+    const chargingStations = collectChargingStations(company);
     if (chargingStations.size > 0) {
       company.charging_stations = Array.from(chargingStations);
     }
