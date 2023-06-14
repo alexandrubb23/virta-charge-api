@@ -76,16 +76,18 @@ export class ChargingStationsService {
     const company = await this.companyService.findOne(company_id);
     const chargingStation = await this.findOne(id);
 
+    const newChargingStation = {
+      ...chargingStation,
+      ...updateChargingStationDto,
+    };
+
     const updatedChargingStation = await this.dataService.chargingStations.save(
-      {
-        ...chargingStation,
-        ...updateChargingStationDto,
-      },
+      newChargingStation,
     );
 
     company.charging_stations.push(updatedChargingStation);
 
-    await this.dataService.companies.save(company);
+    await this.companyService.update(company_id, company);
 
     return updatedChargingStation;
   }

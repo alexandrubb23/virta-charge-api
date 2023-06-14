@@ -7,7 +7,6 @@ import { expectNotFoundException } from 'test/utils/expect.exception';
 import {
   createMockRepository,
   spyOnChargingStationsService,
-  spyOnCompaniesService,
 } from 'test/utils/mock.repositoy';
 import { ChargingStationsService } from './charging-stations.service';
 import { ChargingStation } from './entities/charging-station.entity';
@@ -55,6 +54,7 @@ describe('ChargingStationsService', () => {
           provide: CompaniesService,
           useValue: {
             findOne: jest.fn().mockResolvedValue(expectedCompany),
+            update: jest.fn().mockResolvedValue(expectedCompany),
           },
         },
       ],
@@ -64,10 +64,8 @@ describe('ChargingStationsService', () => {
     dataService = module.get<DataService>(DataService);
   });
 
-  let spyOnCompanies;
   let spyOnChargingStations;
   beforeEach(() => {
-    spyOnCompanies = spyOnCompaniesService(dataService);
     spyOnChargingStations = spyOnChargingStationsService(dataService);
   });
 
