@@ -176,6 +176,7 @@ _I know that testing is a critical part of software development to ensure the re
 - Implement unique companies
 - Implemnent unique charging stations
 - Add more coverege tests
+- Validate if parent exist on company creation
 
 ## Contributing
 

@@ -6,12 +6,13 @@ import { ChargingStationsModule } from './charging-stations/charging-stations.mo
 import { CommonModule } from './common/common.module';
 import { DataServiceModule } from './common/repository/data-service.module';
 import { CompaniesModule } from './companies/companies.module';
-import isProduction from './utils/environment';
+import { isProduction, isTest } from './utils/environment';
 import { databaseSchema } from './validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: isTest ? '.env.test' : '.env',
       ignoreEnvFile: isProduction,
       validationSchema: databaseSchema,
     }),
