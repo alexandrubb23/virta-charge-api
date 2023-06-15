@@ -18,11 +18,11 @@ class SuperTestService {
     this.endpoint = endpoint;
   }
 
-  findAll = async (): Promise<SuperTest> => {
+  findAll = (): Promise<SuperTest> => {
     return this.requestType('get');
   };
 
-  findOne = async (id: number): Promise<SuperTest> => {
+  findOne = (id: number): Promise<SuperTest> => {
     return this.requestType('get', {}, id);
   };
 
@@ -30,15 +30,15 @@ class SuperTestService {
     return this.requestType('post', payload);
   };
 
-  update = async (id: number, payload: Payload): Promise<SuperTest> => {
+  update = (id: number, payload: Payload): Promise<SuperTest> => {
     return this.requestType('patch', payload, id);
   };
 
-  delete = async (id: number): Promise<SuperTest> => {
+  delete = (id: number): Promise<SuperTest> => {
     return this.requestType('delete', {}, id);
   };
 
-  private requestType = async (
+  private requestType = (
     method: string,
     payload: Payload = {},
     id?: number,
@@ -50,7 +50,7 @@ class SuperTestService {
 
     httpRequest.set('Authorization', `Bearer ${this.token}`).send(payload);
 
-    return await httpRequest;
+    return httpRequest;
   };
 
   setToken = (token: string): string => {
