@@ -1,11 +1,10 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
 import { APP_GUARD } from '@nestjs/core';
+import { Test, TestingModule } from '@nestjs/testing';
 
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
 import { CompaniesModule } from 'src/companies/companies.module';
-import { isProduction } from 'src/utils/environment';
 import { databaseSchema } from 'src/validation';
 import SuperTestService from 'test/services/super-test.service';
 

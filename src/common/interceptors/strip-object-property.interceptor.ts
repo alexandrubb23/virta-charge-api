@@ -7,7 +7,7 @@ import {
 import { Observable, map } from 'rxjs';
 
 @Injectable()
-export class StripObjectPropertyInterceptor<T> implements NestInterceptor {
+export class StripObjectPropertyInterceptor implements NestInterceptor {
   constructor(private readonly propertyToRemove: string) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
