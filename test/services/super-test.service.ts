@@ -6,6 +6,7 @@ type Payload = string | object;
 
 class SuperTestService {
   private token: string;
+  private request: supertest.SuperTest<SuperTest>;
 
   constructor(
     private readonly app: INestApplication,
@@ -16,6 +17,7 @@ class SuperTestService {
     }
 
     this.endpoint = endpoint;
+    this.request = request(this.app.getHttpServer());
   }
 
   findAll = (): Promise<SuperTest> => {
@@ -44,9 +46,8 @@ class SuperTestService {
     id?: number,
   ): Promise<SuperTest> => {
     const path = id ? `/${id}` : '';
-    const httpRequest = request(this.app.getHttpServer())[method](
-      `/${this.endpoint}${path}`,
-    );
+
+    const httpRequest = this.request[method](`/${this.endpoint}${path}`);
 
     httpRequest.set('Authorization', `Bearer ${this.token}`).send(payload);
 
