@@ -87,14 +87,14 @@ describe('[Feature] Companies - /companies', () => {
     });
 
     it('should return 400 if an unexpected property is added in the payload', async () => {
-      const porperty = 'unexpectedProperty';
-      company[porperty] = true;
+      const property = 'unexpectedProperty';
+      company[property] = true;
 
       const res = await superTestService.create(company);
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST);
       expect(res.body.message[0]).toEqual(
-        `property ${porperty} should not exist`,
+        `property ${property} should not exist`,
       );
     });
 
@@ -180,14 +180,14 @@ describe('[Feature] Companies - /companies', () => {
     });
 
     it('should return 400 if an unexpected property is added in the payload', async () => {
-      const porperty = 'unexpectedProperty';
-      company[porperty] = true;
+      const property = 'unexpectedProperty';
+      company[property] = true;
 
       const res = await superTestService.update(1, company);
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST);
       expect(res.body.message[0]).toEqual(
-        `property ${porperty} should not exist`,
+        `property ${property} should not exist`,
       );
     });
 
