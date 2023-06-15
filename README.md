@@ -163,9 +163,12 @@ The response will contain a list of charging stations within the specified radiu
 ## Available Tests (lack of time)
 
 ```bash
+# Unit tests
 npm run test -- companies.service
 npm run test -- charging-stations.service
-npm run test -- companiesWithChargingStations
+
+# Integration tests
+ npm run test:e2e -- companies
 
 ```
 
