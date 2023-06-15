@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
-import { Company } from 'src/companies/entities/company.entity';
-import { isDevelopment } from 'src/utils/environment';
+import { isProduction, isTest } from 'src/utils/environment';
 import { DataService } from '../data-service';
 import { PostgresDataService } from './postgres-data-service';
+import { Company } from 'src/companies/entities/company.entity';
+import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 
 @Module({
   imports: [
@@ -16,9 +16,9 @@ import { PostgresDataService } from './postgres-data-service';
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_DB,
-        autoLoadEntities: isDevelopment,
-        synchronize: isDevelopment,
-        logging: isDevelopment,
+        autoLoadEntities: !isProduction,
+        synchronize: !isProduction,
+        logging: !isProduction && !isTest,
       }),
     }),
     TypeOrmModule.forFeature([Company, ChargingStation]),
