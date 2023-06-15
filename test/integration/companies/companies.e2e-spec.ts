@@ -29,7 +29,6 @@ describe('[Feature] Companies - /companies', () => {
       imports: [
         ConfigModule.forRoot({
           envFilePath: '.env.test',
-          ignoreEnvFile: isProduction,
           validationSchema: databaseSchema,
         }),
         CompaniesModule,
