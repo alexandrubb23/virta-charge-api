@@ -4,7 +4,6 @@ import { DataService } from 'src/common/repository/data-service';
 import { expectNotFoundException } from 'test/utils/expect.exception';
 import {
   createMockRepository,
-  spyOnChargingStationsService,
   spyOnCompaniesService,
 } from 'test/utils/mock.repositoy';
 import { CompaniesService } from './companies.service';
@@ -40,10 +39,8 @@ describe('CompaniesService', () => {
   });
 
   let spyOnCompanies;
-  let spyOnChargingStations;
   beforeEach(() => {
     spyOnCompanies = spyOnCompaniesService(dataService);
-    spyOnChargingStations = spyOnChargingStationsService(dataService);
   });
 
   describe('findAll /', () => {
