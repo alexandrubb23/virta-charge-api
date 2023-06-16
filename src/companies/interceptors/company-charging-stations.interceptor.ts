@@ -21,7 +21,7 @@ class CompanyChargingStationsInterceptor implements NestInterceptor {
 
         const parse = CompaniesWithChargingStations.getInstance();
 
-        const companies = parse.companiesWithChargingStations(allCompanies);
+        const companies = parse.traverseCompanies(allCompanies);
         const findCompany = companies.find((c) => c.id === company.id);
 
         return findCompany;
