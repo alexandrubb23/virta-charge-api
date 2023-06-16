@@ -8,13 +8,13 @@ import {
   Patch,
   Post,
   Query,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   ApiAuthAndPayload,
   ApiAuthWithNotFound,
 } from 'src/common/decorators/api.decorator';
+import { ClearCompaniesCacheOnAfter } from 'src/common/decorators/clear-companies-cache.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { StripPropertyOnResponse } from 'src/common/decorators/strip-property.decorator';
 import { SearchCharginStationsQueryDto } from 'src/common/dto/search-charging-stations-query.dto';
@@ -23,7 +23,6 @@ import { ChargingStationsService } from './charging-stations.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ChargingStation } from './entities/charging-station.entity';
-import ClearCompaniesCacheInterceptor from 'src/companies/interceptors/cache-charging-stations.interceptor';
 
 @ApiTags('Charging Stations API')
 @Controller('charging-stations')
@@ -56,8 +55,8 @@ export class ChargingStationsController {
     return this.chargingStationService.findOne(id);
   }
 
-  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthAndPayload()
+  @ClearCompaniesCacheOnAfter()
   @Post()
   create(
     @Body() createChargingStationDto: CreateChargingStationDto,
@@ -65,10 +64,10 @@ export class ChargingStationsController {
     return this.chargingStationService.create(createChargingStationDto);
   }
 
-  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthAndPayload()
-  @Patch(':id')
+  @ClearCompaniesCacheOnAfter()
   @StripPropertyOnResponse('company')
+  @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(FieldsToUpdateValidatorPipe)
@@ -77,10 +76,10 @@ export class ChargingStationsController {
     return this.chargingStationService.update(id, updateChargingStationDto);
   }
 
-  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthWithNotFound()
-  @Delete(':id')
+  @ClearCompaniesCacheOnAfter()
   @StripPropertyOnResponse('company')
+  @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number): Promise<ChargingStation> {
     return this.chargingStationService.remove(id);
   }

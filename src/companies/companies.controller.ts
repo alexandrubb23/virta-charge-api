@@ -16,6 +16,9 @@ import {
   ApiAuthWithNotFound,
   PaginateQuery,
 } from 'src/common/decorators/api.decorator';
+import { ClearCompaniesCacheOnAfter } from 'src/common/decorators/clear-companies-cache.decorator';
+import { AddCompaniesChargingStations } from 'src/common/decorators/companies-charging-stations.decorator';
+import { AddCompanyChargingStations } from 'src/common/decorators/company-charging-stations.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { FieldsToUpdateValidatorPipe } from 'src/common/pipes/fields-to-update-validator.pipe';
@@ -24,10 +27,6 @@ import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
-import {
-  CompaniesChargingStationsInterceptor,
-  CompanyChargingStationsInterceptor,
-} from './interceptors';
 import ClearCompaniesCacheInterceptor from './interceptors/cache-charging-stations.interceptor';
 
 @ApiTags('Companies API')
@@ -35,7 +34,7 @@ import ClearCompaniesCacheInterceptor from './interceptors/cache-charging-statio
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
-  @UseInterceptors(CompaniesChargingStationsInterceptor)
+  @AddCompaniesChargingStations()
   @Public()
   @Get()
   @PaginateQuery()
@@ -43,7 +42,7 @@ export class CompaniesController {
     return this.companiesService.findAll(paginationQuery);
   }
 
-  @UseInterceptors(CompanyChargingStationsInterceptor)
+  @AddCompanyChargingStations()
   @Public()
   @Get(':id')
   @ApiNotFoundResponse({ ...NOT_FOUND })
@@ -51,15 +50,15 @@ export class CompaniesController {
     return this.companiesService.findOne(id);
   }
 
-  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthAndPayload()
+  @ClearCompaniesCacheOnAfter()
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto) {
     return this.companiesService.create(createCompanyDto);
   }
 
-  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthAndPayload()
+  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -68,8 +67,8 @@ export class CompaniesController {
     return this.companiesService.update(id, updateCompanyDto);
   }
 
-  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthWithNotFound()
+  @ClearCompaniesCacheOnAfter()
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.companiesService.remove(id);
