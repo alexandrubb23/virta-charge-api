@@ -3,20 +3,6 @@ import { Company } from '../entities/company.entity';
 
 export class CompaniesWithChargingStations {
   /**
-   * Companies map.
-   *
-   * @private
-   */
-  private static COMPANIES_MAP = new Map<number, Company[]>();
-
-  /**
-   * Stations map.
-   *
-   * @private
-   */
-  private static STATIONS = new Map<number, Set<ChargingStation>>();
-
-  /**
    * List of companies.
    *
    * @private
@@ -28,14 +14,14 @@ export class CompaniesWithChargingStations {
    *
    * @private
    */
-  private companiesMap = CompaniesWithChargingStations.COMPANIES_MAP;
+  private companiesMap = new Map<number, Company[]>();
 
   /**
    * Stations map.
    *
    * @private
    */
-  private stations = CompaniesWithChargingStations.STATIONS;
+  private stations = new Map<number, Set<ChargingStation>>();
 
   /**
    * This is the singleton instance of the class.
@@ -69,10 +55,8 @@ export class CompaniesWithChargingStations {
    * @returns void
    */
   clearCache = (): void => {
-    const { COMPANIES_MAP, STATIONS } = CompaniesWithChargingStations;
-
-    this.companiesMap = COMPANIES_MAP;
-    this.stations = STATIONS;
+    this.companiesMap = new Map<number, Company[]>();
+    this.stations = new Map<number, Set<ChargingStation>>();
   };
 
   /**
