@@ -10,18 +10,18 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+
 import {
   ApiAuthAndPayload,
   ApiAuthWithNotFound,
-} from 'src/common/decorators/api.decorator';
-import { ClearCompaniesCacheOnAfter } from 'src/common/decorators/clear-companies-cache.decorator';
-import { Public } from 'src/common/decorators/public.decorator';
-import { StripPropertyOnResponse } from 'src/common/decorators/strip-property.decorator';
+  ClearCompaniesCacheOnAfter,
+  Public,
+  StripPropertyOnResponse,
+} from 'src/common/decorators';
 import { SearchCharginStationsQueryDto } from 'src/common/dto/search-charging-stations-query.dto';
 import { FieldsToUpdateValidatorPipe } from 'src/common/pipes/fields-to-update-validator.pipe';
 import { ChargingStationsService } from './charging-stations.service';
-import { CreateChargingStationDto } from './dto/create-charging-station.dto';
-import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
+import { CreateChargingStationDto, UpdateChargingStationDto } from './dto';
 import { ChargingStation } from './entities/charging-station.entity';
 
 @ApiTags('Charging Stations API')
