@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
@@ -22,6 +23,7 @@ import { ChargingStationsService } from './charging-stations.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ChargingStation } from './entities/charging-station.entity';
+import CacheChargingStationsInterceptor from 'src/companies/interceptors/cache-charging-stations.interceptor';
 
 @ApiTags('Charging Stations API')
 @Controller('charging-stations')
@@ -54,6 +56,7 @@ export class ChargingStationsController {
     return this.chargingStationService.findOne(id);
   }
 
+  @UseInterceptors(CacheChargingStationsInterceptor)
   @ApiAuthAndPayload()
   @Post()
   create(
@@ -62,6 +65,7 @@ export class ChargingStationsController {
     return this.chargingStationService.create(createChargingStationDto);
   }
 
+  @UseInterceptors(CacheChargingStationsInterceptor)
   @ApiAuthAndPayload()
   @Patch(':id')
   @StripPropertyOnResponse('company')
@@ -73,6 +77,7 @@ export class ChargingStationsController {
     return this.chargingStationService.update(id, updateChargingStationDto);
   }
 
+  @UseInterceptors(CacheChargingStationsInterceptor)
   @ApiAuthWithNotFound()
   @Delete(':id')
   @StripPropertyOnResponse('company')

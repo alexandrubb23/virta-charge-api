@@ -1,76 +1,88 @@
 import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 import { Company } from '../entities/company.entity';
 
-// By utilizing memoization, we avoid redundant calculations for companies
-// that have already been processed, resulting in significant performance
-// improvements. The time complexity is reduced to O(n) in the average case,
-// assuming a balanced company hierarchy. However, in the worst case scenario
-// where the company hierarchy is a straight line from root to leaf, the time
-// complexity will be O(n^2) due to the nature of the input.
-export const companiesWithChargingStations = (
-  companies: Company[],
-): Company[] => {
-  const companyMap = {};
+export class CompaniesWithChargingStations {
+  private companiesMap = new Map<number, Company[]>();
+  private stations = new Map<number, Set<ChargingStation>>();
 
-  // Build parent-child relationship map
-  companies.forEach((company) => {
-    if (company.id === company.parentId) {
-      company.parentId = 0;
+  private static instance: CompaniesWithChargingStations;
+
+  private constructor() {
+    // Do nothing
+  }
+
+  static getInstance(): CompaniesWithChargingStations {
+    if (!CompaniesWithChargingStations.instance) {
+      CompaniesWithChargingStations.instance =
+        new CompaniesWithChargingStations();
     }
 
-    const { parentId } = company;
-    if (parentId !== 0) {
-      if (!companyMap[parentId]) {
-        companyMap[parentId] = [];
-      }
-      companyMap[parentId].push(company);
-    }
-  });
+    return CompaniesWithChargingStations.instance;
+  }
 
-  // Memoization map to store computed charging stations
-  const memo = new Map();
+  clearCache = () => {
+    this.companiesMap = new Map<number, Company[]>();
+    this.stations = new Map<number, Set<ChargingStation>>();
+  };
 
-  // Recursive function with memoization to collect charging stations
-  const collectChargingStations = (
-    company: Company,
-    visited = new Set<number>(),
-  ): Set<ChargingStation> => {
+  // Build parent-child relationship map and update charging stations
+  updateChargingStations = (company: Company): Set<ChargingStation> => {
     const companyId = company.id;
+    const cachedStations = this.stations.get(companyId);
 
-    if (visited.has(companyId)) {
-      // Company has already been visited, return empty set to break the cycle
-      return new Set();
+    if (cachedStations) {
+      console.log('memo hit');
+      return cachedStations;
     }
 
-    visited.add(companyId);
+    const chargingStations = new Set<ChargingStation>();
 
-    if (memo.has(companyId)) {
-      return memo.get(companyId);
-    }
+    company.charging_stations.forEach((station) =>
+      chargingStations.add(station),
+    );
 
-    const chargingStations = new Set(company.charging_stations);
-
-    const children = companyMap[companyId];
+    const children = this.companiesMap.get(companyId);
     if (children) {
       children.forEach((child: Company) => {
-        const childChargingStations = collectChargingStations(child, visited);
+        const childChargingStations = this.updateChargingStations(child);
         childChargingStations.forEach((station) =>
           chargingStations.add(station),
         );
       });
     }
 
-    memo.set(companyId, chargingStations);
+    console.log('memo miss');
+
+    this.stations.set(companyId, chargingStations);
+
     return chargingStations;
   };
 
-  // Update charging stations for each company
-  companies.forEach((company) => {
-    const chargingStations = collectChargingStations(company);
-    if (chargingStations.size > 0) {
-      company.charging_stations = Array.from(chargingStations);
-    }
-  });
+  companiesWithChargingStations = (companies: Company[]): Company[] => {
+    // Build parent-child relationship map
+    companies.forEach((company) => {
+      if (company.id === company.parentId) {
+        company.parentId = 0;
+      }
 
-  return companies;
-};
+      const { parentId } = company;
+      if (parentId !== 0) {
+        if (!this.companiesMap.has(parentId)) {
+          this.companiesMap.set(parentId, []);
+        }
+        this.companiesMap.get(parentId)?.push(company);
+      }
+    });
+
+    // Update charging stations for each company
+    companies.forEach((company) => {
+      const chargingStations = this.updateChargingStations(company);
+
+      if (chargingStations.size > 0) {
+        company.charging_stations = Array.from(chargingStations);
+      }
+    });
+
+    return companies;
+  };
+}
