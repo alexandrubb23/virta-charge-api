@@ -9,7 +9,7 @@ import { CompaniesWithChargingStations } from '../utils/companiesWithChargingSta
 import { Company } from '../entities/company.entity';
 
 @Injectable()
-class CacheChargingStationsInterceptor implements NestInterceptor {
+class ClearCompaniesCacheInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((company: Company[]) => {
@@ -21,4 +21,4 @@ class CacheChargingStationsInterceptor implements NestInterceptor {
   }
 }
 
-export default CacheChargingStationsInterceptor;
+export default ClearCompaniesCacheInterceptor;

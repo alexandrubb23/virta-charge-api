@@ -28,7 +28,7 @@ import {
   CompaniesChargingStationsInterceptor,
   CompanyChargingStationsInterceptor,
 } from './interceptors';
-import CacheChargingStationsInterceptor from './interceptors/cache-charging-stations.interceptor';
+import ClearCompaniesCacheInterceptor from './interceptors/cache-charging-stations.interceptor';
 
 @ApiTags('Companies API')
 @Controller('companies')
@@ -51,14 +51,14 @@ export class CompaniesController {
     return this.companiesService.findOne(id);
   }
 
-  @UseInterceptors(CacheChargingStationsInterceptor)
+  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthAndPayload()
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto) {
     return this.companiesService.create(createCompanyDto);
   }
 
-  @UseInterceptors(CacheChargingStationsInterceptor)
+  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthAndPayload()
   @Patch(':id')
   update(
@@ -68,7 +68,7 @@ export class CompaniesController {
     return this.companiesService.update(id, updateCompanyDto);
   }
 
-  @UseInterceptors(CacheChargingStationsInterceptor)
+  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthWithNotFound()
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {

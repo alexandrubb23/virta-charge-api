@@ -13,15 +13,9 @@ class CompaniesChargingStationsInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((companies: Company[]) => {
-        const companiesWithChargingStations =
-          CompaniesWithChargingStations.getInstance();
-
-        const companiesWithChargingStationsList =
-          companiesWithChargingStations.companiesWithChargingStations(
-            companies,
-          );
-
-        return companiesWithChargingStationsList;
+        return CompaniesWithChargingStations.getInstance().traverseCompanies(
+          companies,
+        );
       }),
     );
   }

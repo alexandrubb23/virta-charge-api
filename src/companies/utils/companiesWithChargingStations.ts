@@ -2,31 +2,104 @@ import { ChargingStation } from 'src/charging-stations/entities/charging-station
 import { Company } from '../entities/company.entity';
 
 export class CompaniesWithChargingStations {
-  private companiesMap = new Map<number, Company[]>();
-  private stations = new Map<number, Set<ChargingStation>>();
+  /**
+   * Companies map.
+   *
+   * @private
+   */
+  private static COMPANIES_MAP = new Map<number, Company[]>();
 
-  private static instance: CompaniesWithChargingStations;
+  /**
+   * Stations map.
+   *
+   * @private
+   */
+  private static STATIONS = new Map<number, Set<ChargingStation>>();
 
+  /**
+   * List of companies.
+   *
+   * @private
+   */
+  private companies: Company[] = new Array<Company>();
+
+  /**
+   * Companies map.
+   *
+   * @private
+   */
+  private companiesMap = CompaniesWithChargingStations.COMPANIES_MAP;
+
+  /**
+   * Stations map.
+   *
+   * @private
+   */
+  private stations = CompaniesWithChargingStations.STATIONS;
+
+  /**
+   * This is the singleton instance of the class.
+   *
+   * @private
+   */
+  private static instance: CompaniesWithChargingStations =
+    new CompaniesWithChargingStations();
+
+  /**
+   * This is the private constructor of the class.
+   *
+   * @private
+   */
   private constructor() {
-    // Do nothing
+    // Block the creation of the class instance.
   }
 
+  /**
+   * Create a singleton instance of the class.
+   *
+   * @returns
+   */
   static getInstance(): CompaniesWithChargingStations {
-    if (!CompaniesWithChargingStations.instance) {
-      CompaniesWithChargingStations.instance =
-        new CompaniesWithChargingStations();
-    }
-
     return CompaniesWithChargingStations.instance;
   }
 
-  clearCache = () => {
-    this.companiesMap = new Map<number, Company[]>();
-    this.stations = new Map<number, Set<ChargingStation>>();
+  /**
+   * Clear the cache.
+   *
+   * @returns void
+   */
+  clearCache = (): void => {
+    const { COMPANIES_MAP, STATIONS } = CompaniesWithChargingStations;
+
+    this.companiesMap = COMPANIES_MAP;
+    this.stations = STATIONS;
   };
 
-  // Build parent-child relationship map and update charging stations
-  updateChargingStations = (company: Company): Set<ChargingStation> => {
+  /**
+   * Traverse companies and update charging stations.
+   *
+   * @param companies Company[]
+   * @returns Company[]
+   */
+  traverseCompanies = (companies: Company[]): Company[] => {
+    this.companies = companies;
+
+    this.buildParentChildRelationshipMap();
+
+    return this.buildCompaniesWithChargingStations();
+  };
+
+  /**
+   * Build parent-child relationship map and update charging stations
+   *
+   * @param company
+   * @param visited
+   * @returns
+   */
+  private updateChargingStations = (
+    company: Company,
+    visited: Set<number>,
+  ): Set<ChargingStation> => {
     const companyId = company.id;
     const cachedStations = this.stations.get(companyId);
 
@@ -41,13 +114,20 @@ export class CompaniesWithChargingStations {
       chargingStations.add(station),
     );
 
+    visited.add(companyId);
+
     const children = this.companiesMap.get(companyId);
     if (children) {
       children.forEach((child: Company) => {
-        const childChargingStations = this.updateChargingStations(child);
-        childChargingStations.forEach((station) =>
-          chargingStations.add(station),
-        );
+        if (!visited.has(child.id)) {
+          const childChargingStations = this.updateChargingStations(
+            child,
+            visited,
+          );
+          childChargingStations.forEach((station) =>
+            chargingStations.add(station),
+          );
+        }
       });
     }
 
@@ -58,31 +138,45 @@ export class CompaniesWithChargingStations {
     return chargingStations;
   };
 
-  companiesWithChargingStations = (companies: Company[]): Company[] => {
-    // Build parent-child relationship map
-    companies.forEach((company) => {
+  /**
+   * Build parent-child relationship map.
+   *
+   * @returns void
+   */
+  private buildParentChildRelationshipMap = (): void => {
+    this.companies.forEach((company) => {
       if (company.id === company.parentId) {
         company.parentId = 0;
       }
 
       const { parentId } = company;
-      if (parentId !== 0) {
-        if (!this.companiesMap.has(parentId)) {
-          this.companiesMap.set(parentId, []);
-        }
-        this.companiesMap.get(parentId)?.push(company);
-      }
-    });
+      if (parentId === 0) return;
 
-    // Update charging stations for each company
-    companies.forEach((company) => {
-      const chargingStations = this.updateChargingStations(company);
+      if (!this.companiesMap.has(parentId)) {
+        this.companiesMap.set(parentId, []);
+      }
+
+      this.companiesMap.get(parentId).push(company);
+    });
+  };
+
+  /**
+   * Build companies with charging stations.
+   *
+   * @returns Company[]
+   */
+  private buildCompaniesWithChargingStations = (): Company[] => {
+    this.companies.forEach((company) => {
+      const chargingStations = this.updateChargingStations(
+        company,
+        new Set<number>(),
+      );
 
       if (chargingStations.size > 0) {
         company.charging_stations = Array.from(chargingStations);
       }
     });
 
-    return companies;
+    return this.companies;
   };
 }

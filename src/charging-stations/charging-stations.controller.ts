@@ -23,7 +23,7 @@ import { ChargingStationsService } from './charging-stations.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ChargingStation } from './entities/charging-station.entity';
-import CacheChargingStationsInterceptor from 'src/companies/interceptors/cache-charging-stations.interceptor';
+import ClearCompaniesCacheInterceptor from 'src/companies/interceptors/cache-charging-stations.interceptor';
 
 @ApiTags('Charging Stations API')
 @Controller('charging-stations')
@@ -56,7 +56,7 @@ export class ChargingStationsController {
     return this.chargingStationService.findOne(id);
   }
 
-  @UseInterceptors(CacheChargingStationsInterceptor)
+  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthAndPayload()
   @Post()
   create(
@@ -65,7 +65,7 @@ export class ChargingStationsController {
     return this.chargingStationService.create(createChargingStationDto);
   }
 
-  @UseInterceptors(CacheChargingStationsInterceptor)
+  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthAndPayload()
   @Patch(':id')
   @StripPropertyOnResponse('company')
@@ -77,7 +77,7 @@ export class ChargingStationsController {
     return this.chargingStationService.update(id, updateChargingStationDto);
   }
 
-  @UseInterceptors(CacheChargingStationsInterceptor)
+  @UseInterceptors(ClearCompaniesCacheInterceptor)
   @ApiAuthWithNotFound()
   @Delete(':id')
   @StripPropertyOnResponse('company')
