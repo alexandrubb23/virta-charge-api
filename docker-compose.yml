@@ -15,8 +15,8 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - postgres
-  postgres:
+      - db
+  db:
     build:
       context: .
       dockerfile: Dockerfile.postgres
@@ -30,12 +30,12 @@ services:
       - 5432:5432
     volumes:
       - ./init-scripts:/docker-entrypoint-initdb.d
-  test-postgres:
+  test-db:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: pass123
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - 5433:5432
 volumes:
-  docker-nest-postgres:
+  docker-nest-db:
