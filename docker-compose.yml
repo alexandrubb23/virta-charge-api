@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+    environment:
+      - DATABASE_HOST=host.docker.internal
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules

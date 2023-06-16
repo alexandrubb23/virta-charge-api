@@ -92,10 +92,8 @@ npm install
 2. Build and run the database:
 
 ```bash
-docker compose up postgres --build
+docker compose up db --build
 ```
-
-_Note: If you decide to run only the PostgreSQL database service without the API, make sure to set the `DATABASE_HOST` environment variable to localhost._
 
 3. Run the API
 
@@ -125,7 +123,7 @@ You can run the project using `Docker`. Make sure you have `Docker` installed an
 docker compose up --build
 ```
 
-This command will start both services: `PostreSQL` and `API`. It will initiate the `PostgreSQL` database container and run the `API` server concurrently, allowing you to interact with the `API` and utilize the database functionalities seamlessly.
+This command will start both services: `DB` and `API`. It will initiate the `DB` database container and run the `API` server concurrently, allowing you to interact with the `API` and utilize the database functionalities seamlessly.
 
 The `API` will be accessible at http://localhost:3000.
 
