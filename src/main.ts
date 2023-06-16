@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { env } from './utils';
 
 function createSwaggerDocument(app: INestApplication): void {
   const options = new DocumentBuilder()
@@ -42,7 +43,8 @@ async function bootstrap() {
 
   createSwaggerDocument(app);
 
-  await app.listen(process.env.API_PORT || 3000);
+  const port = env('API_PORT') || 3000;
+  await app.listen(port);
 }
 
 bootstrap();

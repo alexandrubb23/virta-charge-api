@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { ApiKeyGuard } from 'src/common/guards/api-key/api-key.guard';
 import { CompaniesModule } from 'src/companies/companies.module';
+import { env } from 'src/utils';
 import { databaseSchema } from 'src/validation';
 import SuperTestService from 'test/services/super-test.service';
 
@@ -71,7 +72,7 @@ describe('[Feature] Companies - /companies', () => {
   });
 
   beforeEach(() => {
-    superTestService.setToken(process.env.API_KEY);
+    superTestService.setToken(env('API_KEY'));
   });
 
   describe('POST /', () => {
