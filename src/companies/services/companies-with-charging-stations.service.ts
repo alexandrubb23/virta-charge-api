@@ -21,7 +21,10 @@ export class CompaniesWithChargingStations {
    *
    * @private
    */
-  private stations = new Map<number, Set<ChargingStation>>();
+  private companiesWithChargingStations = new Map<
+    number,
+    Set<ChargingStation>
+  >();
 
   /**
    * This is the singleton instance of the class.
@@ -55,8 +58,8 @@ export class CompaniesWithChargingStations {
    * @returns void
    */
   clearCache = (): void => {
-    this.stations.clear();
     this.companiesMap.clear();
+    this.companiesWithChargingStations.clear();
   };
 
   /**
@@ -85,7 +88,7 @@ export class CompaniesWithChargingStations {
     visited: Set<number>,
   ): Set<ChargingStation> => {
     const companyId = company.id;
-    const cachedStations = this.stations.get(companyId);
+    const cachedStations = this.companiesWithChargingStations.get(companyId);
 
     if (cachedStations) {
       console.log('memo hit');
@@ -117,7 +120,7 @@ export class CompaniesWithChargingStations {
 
     console.log('memo miss');
 
-    this.stations.set(companyId, chargingStations);
+    this.companiesWithChargingStations.set(companyId, chargingStations);
 
     return chargingStations;
   };
