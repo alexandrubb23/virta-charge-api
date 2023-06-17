@@ -19,9 +19,11 @@ class CompanyChargingStationsInterceptor implements NestInterceptor {
       map(async (company: Company) => {
         const allCompanies = await this.companiesService.findAll();
 
-        const parse = CompaniesWithChargingStations.getInstance();
+        const companies =
+          CompaniesWithChargingStations.getInstance().traverseCompanies(
+            allCompanies,
+          );
 
-        const companies = parse.traverseCompanies(allCompanies);
         const findCompany = companies.find((c) => c.id === company.id);
 
         return findCompany;
