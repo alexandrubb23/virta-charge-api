@@ -55,8 +55,8 @@ export class CompaniesWithChargingStations {
    * @returns void
    */
   clearCache = (): void => {
-    this.companiesMap = new Map<number, Company[]>();
-    this.stations = new Map<number, Set<ChargingStation>>();
+    this.stations.clear();
+    this.companiesMap.clear();
   };
 
   /**
