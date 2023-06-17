@@ -17,7 +17,7 @@ export class CompaniesWithChargingStations {
   private companiesMap = new Map<number, Company[]>();
 
   /**
-   * Stations map.
+   * Companies with charging stations map.
    *
    * @private
    */
