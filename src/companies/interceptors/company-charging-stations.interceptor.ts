@@ -8,7 +8,7 @@ import { Observable, map } from 'rxjs';
 
 import { CompaniesService } from '../companies.service';
 import { Company } from '../entities/company.entity';
-import { companiesWithChargingStations } from '../utils/companiesWithChargingStations';
+import { CompaniesWithChargingStations } from '../services/companies-with-charging-stations.service';
 
 @Injectable()
 class CompanyChargingStationsInterceptor implements NestInterceptor {
@@ -19,7 +19,11 @@ class CompanyChargingStationsInterceptor implements NestInterceptor {
       map(async (company: Company) => {
         const allCompanies = await this.companiesService.findAll();
 
-        const companies = companiesWithChargingStations(allCompanies);
+        const companies =
+          CompaniesWithChargingStations.getInstance().traverseCompanies(
+            allCompanies,
+          );
+
         const findCompany = companies.find((c) => c.id === company.id);
 
         return findCompany;

@@ -1,4 +1,4 @@
-import { env } from './env';
+import { env } from './env.helper';
 
 const NODE_ENV = env('NODE_ENV');
 

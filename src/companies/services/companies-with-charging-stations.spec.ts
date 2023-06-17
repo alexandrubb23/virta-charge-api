@@ -1,6 +1,6 @@
 import { ChargingStation } from 'src/charging-stations/entities/charging-station.entity';
 import { Company } from '../entities/company.entity';
-import { companiesWithChargingStations } from './companiesWithChargingStations';
+import { CompaniesWithChargingStations } from './companies-with-charging-stations.service';
 
 const companies: Company[] = [
   {
@@ -52,10 +52,14 @@ const companies: Company[] = [
 ];
 
 describe('companiesWithChargingStations /', () => {
+  let result: Company[];
+  beforeEach(() => {
+    result =
+      CompaniesWithChargingStations.getInstance().traverseCompanies(companies);
+  });
+
   describe('if the company with id 2 is child of company id 1', () => {
     it('should return the company with id 1 with the charging stations of company with id 2', () => {
-      const result = companiesWithChargingStations(companies);
-
       const chargingStations = result[0].charging_stations;
 
       expect(chargingStations.length).toBe(3);
@@ -66,8 +70,6 @@ describe('companiesWithChargingStations /', () => {
 
   describe('if the company with id 3 is child of company id 2', () => {
     it('should return the company with id 2 with the charging stations of company with id 3', () => {
-      const result = companiesWithChargingStations(companies);
-
       const chargingStations = result[1].charging_stations;
 
       expect(chargingStations.length).toBe(2);
@@ -78,8 +80,6 @@ describe('companiesWithChargingStations /', () => {
 
   describe('if the company with id 2  is child of company id 1 and company with id 3 is child of company id 2', () => {
     it('should return the company with id 1 with the charging stations of company with id 2 and company with id 3', () => {
-      const result = companiesWithChargingStations(companies);
-
       const chargingStations = result[0].charging_stations;
 
       expect(chargingStations.length).toBe(3);
