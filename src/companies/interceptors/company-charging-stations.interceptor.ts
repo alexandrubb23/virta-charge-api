@@ -8,7 +8,7 @@ import { Observable, map } from 'rxjs';
 
 import { CompaniesService } from '../companies.service';
 import { Company } from '../entities/company.entity';
-import { CompaniesWithChargingStations } from '../utils/companiesWithChargingStations';
+import { CompaniesWithChargingStations } from '../services/companies-with-charging-stations.service';
 
 @Injectable()
 class CompanyChargingStationsInterceptor implements NestInterceptor {

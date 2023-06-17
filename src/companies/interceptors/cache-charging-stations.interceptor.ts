@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
-import { CompaniesWithChargingStations } from '../utils/companiesWithChargingStations';
+import { CompaniesWithChargingStations } from '../services/companies-with-charging-stations.service';
 import { Company } from '../entities/company.entity';
 
 @Injectable()
