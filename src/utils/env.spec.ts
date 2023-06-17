@@ -1,6 +1,6 @@
 import { isArray } from 'lodash';
 
-import { env } from './env';
+import { env } from './env.helper';
 
 describe('env /', () => {
   process.env.ARRAY = '[1, 2, 3]';

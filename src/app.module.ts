@@ -6,7 +6,7 @@ import { ChargingStationsModule } from './charging-stations/charging-stations.mo
 import { CommonModule } from './common/common.module';
 import { DataServiceModule } from './common/repository/data-service.module';
 import { CompaniesModule } from './companies/companies.module';
-import { isProduction, isTest } from './utils/environment';
+import { isProduction, isTest } from './utils/environment.helper';
 import { databaseSchema } from './validation';
 
 @Module({

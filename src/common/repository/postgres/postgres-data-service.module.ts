@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { isProduction, isTest } from 'src/utils/environment';
+import { isProduction, isTest } from 'src/utils/environment.helper';
 import { DataService } from '../data-service';
 import { PostgresDataService } from './postgres-data-service';
 import { Company } from 'src/companies/entities/company.entity';
