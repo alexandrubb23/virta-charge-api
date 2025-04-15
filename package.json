@@ -23,7 +23,7 @@
     "posttest:e2e": "docker-compose stop test-db && docker-compose rm -f test-db"
   },
   "dependencies": {
-    "@nestjs/common": "^9.0.0",
+    "@nestjs/common": "^11.0.16",
     "@nestjs/config": "^2.3.3",
     "@nestjs/core": "^9.0.0",
     "@nestjs/mapped-types": "^1.2.2",
